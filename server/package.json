@@ -9,6 +9,7 @@
   "author": "Omar Shaikh <oshaikh13@gmail.com> (http://www.awesomeomar.com)",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.14.0"
+    "express": "^4.14.0",
+    "mysql": "^2.11.1"
   }
 }
