@@ -1,3 +1,4 @@
+
 var frame = 0;
 
 function getPositions () {
@@ -33,14 +34,20 @@ function getPositions () {
       },
 
       head: {
-        position: {}
+        position: MyAvatar.getHeadPosition()
       },
 
-      camera: {},
+      camera: {
+        position: Camera.getPosition(),
+        orientaion: Camera.getOrientation()
+      },
+
+      jointRotations: MyAvatar.getJointRotations(),
+
+      getJointNames: MyAvatar.getJointNames(),
 
       timestamp: Date.now()
     };
-
 
 
   }
