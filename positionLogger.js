@@ -1,12 +1,18 @@
 
 var frame = 0;
 
+function sendToServer (req) {
+  // POST using XMLHttpRequest
+}
+
 function getPositions () {
 
   if (frame % 3 === 0) {
 
     // Request Structure
     var req = {
+      displayName: MyAvatar.displayName,
+
       hands: {
         leftHand : {
           position: MyAvatar.getLeftHandPosition(),
@@ -34,23 +40,24 @@ function getPositions () {
       },
 
       head: {
-        position: MyAvatar.getHeadPosition()
+        position: MyAvatar.getHeadPosition(),
+        pitch: MyAvatar.headRoll,
+        yaw: MyAvatar.headYaw,
+        roll: MyAvatar.headPitch
       },
 
-      camera: {
-        position: Camera.getPosition(),
-        orientaion: Camera.getOrientation()
+      body: {
+        pitch: MyAvatar.bodyPitch,
+        yaw: MyAvatar.bodyYaw,
+        roll: MyAvatar.bodyRoll
       },
-
-      jointRotations: MyAvatar.getJointRotations(),
-
-      getJointNames: MyAvatar.getJointNames(),
 
       timestamp: Date.now()
     };
 
-
   }
+
+  sendToServer(req);
 
   frame++;
 
