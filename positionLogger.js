@@ -3,6 +3,18 @@ var frame = 0;
 
 function sendToServer (req) {
   // POST using XMLHttpRequest
+  var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance 
+
+  xmlhttp.onreadystatechange = function () {
+    if (httpRequest.status !== 200) {
+      print("Failed to save a datapoint");
+    } 
+  };
+
+
+  xmlhttp.open("POST", "http://localhost:8000/api/action/createAction");
+  xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+  xmlhttp.send(JSON.stringify(req));
 }
 
 function getPositions () {
