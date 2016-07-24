@@ -16,13 +16,10 @@ module.exports = function (app, express) {
   app.use(bodyParser.urlencoded({extended: true}));
   app.use(bodyParser.json());
 
-  app.use('/api/action', userRouter); // use user router for all user request
-
-  app.use(helpers.errorLogger);
-  app.use(helpers.errorHandler);
+  app.use('/api/action', actionRouter); // use user router for all user request
 
   // inject our routers into their respective route files
-  require('../actions/actionRoutes.js')(userRouter);
+  require('../actions/actionRoutes.js')(actionRouter);
 
 
 };
