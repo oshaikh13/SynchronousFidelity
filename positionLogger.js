@@ -3,22 +3,38 @@ var frame = 0;
 
 function sendToServer (req) {
   // POST using XMLHttpRequest
+  if (!req) {
+    return; // 'undefined' or 'null' for whatever reason
+
+  } 
+
+  var hands = req.hands;
+  if (!hands.leftHand.pose.valid || !hands.rightHand.pose.valid) {
+    // Checks if the hands are NOT being controlled by the vive controller
+    // This is also run if the vive isn't in use, and you're using a display
+    return;
+  }
+
+
   var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance 
+  // you need to make a new instance for every HTTP request
 
   xmlhttp.onreadystatechange = function () {
-    if (httpRequest.status !== 200) {
+    if (xmlhttp.status !== 200) {
       print("Failed to save a datapoint");
     } 
   };
 
 
-  xmlhttp.open("POST", "http://localhost:8000/api/action/createAction");
+  xmlhttp.open("POST", "http://localhost:8000/api/action/create");
   xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
   xmlhttp.send(JSON.stringify(req));
+
 }
 
 function getPositions () {
 
+  // Only send requests on every 3rd frame
   if (frame % 3 === 0) {
 
     // Request Structure
