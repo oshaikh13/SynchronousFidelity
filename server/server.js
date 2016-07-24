@@ -1,6 +1,7 @@
 // Load .env file only if not in production
 if (process.env.NODE_ENV != "production") {
   require('dotenv').config();
+  console.log('connecting to ' + process.env.MONGODB_URI)
 }
 
 var express     = require('express'),
@@ -18,6 +19,7 @@ mongoose.connect(process.env.MONGODB_URI); // connect to mongo database
 require('./config/middleware.js')(app, express);
 
 server.listen(process.env.PORT || 8000);
+
 
 module.exports = app;
 
