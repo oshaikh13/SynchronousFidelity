@@ -10,7 +10,7 @@ function replaceQuaternions(quatLocation, bodyPart) {
   prettyPrint(bodyPart);
 
   // Documentation says this returns radians.
-  // Surprise! It returns angles
+  // Surprise! It returns degrees
   var angles = Quat.safeEulerAngles(quatLocation);
 
   bodyPart.pitch = angles.x;
