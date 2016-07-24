@@ -1,6 +1,26 @@
 
 var frame = 0;
 
+function prettyPrint(obj) {
+  print(JSON.stringify(obj, null , 2));
+}
+
+function replaceQuaternions(quatLocation, bodyPart) {
+  prettyPrint(quatLocation);
+  prettyPrint(bodyPart);
+
+  // Documentation says this returns radians.
+  // Surprise! It returns angles
+  var angles = Quat.safeEulerAngles(quatLocation);
+
+  bodyPart.pitch = angles.x;
+  bodyPart.yaw = angles.y;
+  bodyPart.roll = angles.z;
+
+  return bodyPart;
+}
+
+
 function sendToServer (req) {
   // POST using XMLHttpRequest
   if (!req) {
@@ -8,11 +28,8 @@ function sendToServer (req) {
 
   } 
 
-  var hands = req.hands;
-  if (!hands.leftHand.pose.valid || !hands.rightHand.pose.valid) {
-    // Checks if the hands are NOT being controlled by the vive controller
-    // This is also run if the vive isn't in use, and you're using a display
-    return;
+  if (frame % 50 === 0) {
+    JSON.stringify(req, null, 2);
   }
 
 
@@ -83,9 +100,35 @@ function getPositions () {
       timestamp: Date.now()
     };
 
+    var hands = req.hands;
+    if (!hands.leftHand.pose.valid || !hands.rightHand.pose.valid) {
+      // Checks if the hands are NOT being controlled by the vive controller
+      // This is also run if the vive isn't in use, and you're using a display
+      print("NO CONTROLLER")
+      return;
+    }
+
+    for (var palmType in req.palms) {
+      var palm = req.palms[palmType];
+      var palmRotation = palm.rotation;
+
+      palm = replaceQuaternions(palmRotation, palm);
+      palm.rotation = undefined;
+    }
+
+
+    for (var handType in req.hands) {
+      var hand = req.hands[handType];
+      var handPose = hand.pose.rotation;
+
+      hand = replaceQuaternions(handPose, hand);
+      hand.pose = undefined;
+    }
+
+
+    sendToServer(req);
   }
 
-  sendToServer(req);
 
   frame++;
 
