@@ -2,10 +2,14 @@ var Action = require('./actionModel.js');
 
 function getAngles(q) {
   var obj = {}
+  var w = q.w
+  var x = q.x
+  var y = q.y
+  var z = q.z
 
-  obj.yaw   = Math.atan2(2.0*(q.y*q.z + q.w*q.x), q.w*q.w - q.x*q.x - q.y*q.y + q.z*q.z);
-  obj.pitch = Math.asin(-2.0*(q.x*q.z - q.w*q.y));
-  obj.roll  = Math.atan2(2.0*(q.x*q.y + q.w*q.z), q.w*q.w + q.x*q.x - q.y*q.y - q.z*q.z);
+  obj.roll  = Math.atan2(2*y*w - 2*x*z, 1 - 2*y*y - 2*z*z);
+  obj.pitch = Math.atan2(2*x*w - 2*y*z, 1 - 2*x*x - 2*z*z);
+  obj.yaw   =  Math.asin(2*x*y + 2*z*w);
   return obj;
 }
 
