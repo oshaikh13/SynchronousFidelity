@@ -1,0 +1,16 @@
+{
+  "name": "jsoncsv",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^2.0.0",
+    "json2csv": "^3.6.2",
+    "mongoose": "^4.5.7"
+  }
+}
