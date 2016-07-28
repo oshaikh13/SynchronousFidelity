@@ -20,6 +20,25 @@ var ActionSchema = new mongoose.Schema({
     }
   },
 
+
+  palms: {   
+   
+    rightPalm: {    
+      position: {},   
+      pitch: Number,    
+      yaw: Number,    
+      roll: Number    
+    },    
+
+    leftPalm: {   
+      position: {},   
+      pitch: Number,    
+      yaw: Number,    
+      roll: Number    
+    }   
+   
+ },
+
   head: {
     position: {},
     pitch: Number,

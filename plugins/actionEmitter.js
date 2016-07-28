@@ -35,7 +35,7 @@ function sendToServer (req) {
   var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance 
   // you need to make a new instance for every HTTP request
 
-  prettyPrint("P: " + Math.floor(req.hands.leftHand.pitch) + " Y: " + Math.floor(req.hands.leftHand.yaw) + " R: " + Math.floor(req.hands.leftHand.roll));
+  prettyPrint("P: " + Math.floor(req.palms.leftPalm.pitch) + " Y: " + Math.floor(req.palms.leftPalm.yaw) + " R: " + Math.floor(req.palms.leftPalm.roll));
 
 
   if (DEBUG) {
@@ -77,6 +77,21 @@ function getPositions () {
         }
       },
 
+
+      palms: {
+
+        rightPalm: {
+          position: MyAvatar.getRightPalmPosition(),
+          rotation: MyAvatar.getRightPalmRotation()
+        },
+
+        leftPalm: {
+          position: MyAvatar.getLeftPalmPosition(),
+          rotation: MyAvatar.getLeftPalmRotation()
+        }
+
+      },
+
       head: {
         // 'World Space in game' coordinates
         position: MyAvatar.getHeadPosition(),
@@ -109,6 +124,15 @@ function getPositions () {
 
       hand = replaceQuaternions(handPose, hand);
       hand.pose = undefined;
+    }
+
+
+    for (var palmType in req.palms) {
+      var palm = req.palms[palmType];
+      var palmRotation = palm.rotation;
+
+      palm = replaceQuaternions(palmRotation, palm);
+      palm.rotation = undefined;
     }
 
 

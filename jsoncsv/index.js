@@ -26,7 +26,19 @@ var fields = [
               'hands.rightHand.roll',
               'hands.rightHand.position.x',
               'hands.rightHand.position.y',
-              'hands.rightHand.position.z'
+              'hands.rightHand.position.z',
+              'palms.leftPalm.pitch',
+              'palms.leftPalm.yaw', 
+              'palms.leftPalm.roll',
+              'palms.leftPalm.position.x',
+              'palms.leftPalm.position.y',
+              'palms.leftPalm.position.z',
+              'palms.rightPalm.pitch',
+              'palms.rightPalm.yaw', 
+              'palms.rightPalm.roll',
+              'palms.rightPalm.position.x',
+              'palms.rightPalm.position.y',
+              'palms.rightPalm.position.z'
               ];
 
 Action.find({}).lean().exec(function (err, actions) {
