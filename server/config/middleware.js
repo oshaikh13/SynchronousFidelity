@@ -11,15 +11,20 @@ module.exports = function (app, express) {
 
   // Express 4 allows us to use multiple routers with their own configurations
   var actionRouter = express.Router();
+  var eventRouter = express.Router();
+
 
   app.use(morgan('dev'));
   app.use(bodyParser.urlencoded({extended: true}));
   app.use(bodyParser.json());
 
-  app.use('/api/action', actionRouter); // use user router for all user request
+  app.use('/api/action', actionRouter);
+  app.use('/api/event', eventRouter);
 
   // inject our routers into their respective route files
   require('../actions/actionRoutes.js')(actionRouter);
+  require('../events/eventRoutes.js')(eventRouter);
+
 
 
 };

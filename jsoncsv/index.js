@@ -4,14 +4,21 @@ var mongoose = require('mongoose'),
 
 require('dotenv').config();
 
-var Action = require('./actionModel.js');
+mongoose.connect(process.env.MONGODB_URI); // connect to mongo database
 
-var fields = [
+var Action = require('./actionModel.js');
+var Event = require('./eventModel.js');
+
+
+var actionFields = [
               'timestamp',
               'displayname',
               'head.pitch',
               'head.yaw', 
               'head.roll',
+              'body.pitch',
+              'body.yaw', 
+              'body.roll',
               'head.position.x',
               'head.position.y',
               'head.position.z',
@@ -41,25 +48,49 @@ var fields = [
               'palms.rightPalm.position.z'
               ];
 
+var eventFields = [
+  'eventName',
+  'timestamp'
+];
+
 Action.find({}).lean().exec(function (err, actions) {
   if (err) {
     console.log("Error querying database");
     return;
   };
 
-  var csv = json2csv({ data: actions, fields: fields });
+  var csv = json2csv({ data: actions, fields: actionFields });
 
-  fs.writeFile(__dirname + '/file.csv', csv, function(err) {
+  fs.writeFile(__dirname + '/actions.csv', csv, function(err) {
     if (err) {
       console.log('Failed to write data file');
       return;
     }
 
-    console.log("Complete!")
+    console.log("Complete writing actions file!")
 
   });
 
 
 })
 
-mongoose.connect(process.env.MONGODB_URI); // connect to mongo database
+Event.find({}).lean().exec(function (err, events) {
+  if (err) {
+    console.log("Error querying database");
+    return;
+  };
+
+  var csv = json2csv({ data: events, fields: eventFields });
+
+  fs.writeFile(__dirname + '/events.csv', csv, function(err) {
+    if (err) {
+      console.log('Failed to write data file');
+      return;
+    }
+
+    console.log("Complete writing events file!")
+
+  });
+
+
+})

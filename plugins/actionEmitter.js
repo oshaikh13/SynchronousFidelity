@@ -1,7 +1,9 @@
 
+var baseURL = "https://salty-stream-30260.herokuapp.com/"
+
 var frame = 0;
 
-var DEBUG = true;
+var DEBUG = false;
 
 function prettyPrint(obj) {
   print(JSON.stringify(obj, null , 2));
@@ -35,9 +37,6 @@ function sendToServer (req) {
   var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance 
   // you need to make a new instance for every HTTP request
 
-  prettyPrint("P: " + Math.floor(req.palms.leftPalm.pitch) + " Y: " + Math.floor(req.palms.leftPalm.yaw) + " R: " + Math.floor(req.palms.leftPalm.roll));
-
-
   if (DEBUG) {
     return;
   }
@@ -49,7 +48,7 @@ function sendToServer (req) {
   };
 
 
-  xmlhttp.open("POST", "http://localhost:8000/api/action/create");
+  xmlhttp.open("POST", baseURL + "api/action/create");
   xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
   xmlhttp.send(JSON.stringify(req));
 
@@ -114,7 +113,6 @@ function getPositions () {
     if (!DEBUG && (!hands.leftHand.pose.valid || !hands.rightHand.pose.valid)) {
       // Checks if the hands are NOT being controlled by the vive controller
       // This is also run if the vive isn't in use, and you're using a display
-      print("ERR;")
       return;
     }
 
