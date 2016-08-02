@@ -13,7 +13,7 @@ module.exports = {
     Action.create(newAction, function(err, doc){
 
       if (err) {
-        res.sendStatus(400);
+        res.status(400).send(err);
       } else res.sendStatus(200);
 
     })

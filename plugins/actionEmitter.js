@@ -44,7 +44,11 @@ function sendToServer (req) {
   xmlhttp.onreadystatechange = function () {
     if (xmlhttp.status !== 200) {
       print("Failed to save a datapoint");
-    } 
+      prettyPrint(xmlhttp.responseType);
+      prettyPrint(xmlhttp.response);
+    } else {
+      print("Saved a datapoint");
+    }
   };
 
 
@@ -113,6 +117,7 @@ function getPositions () {
     if (!DEBUG && (!hands.leftHand.pose.valid || !hands.rightHand.pose.valid)) {
       // Checks if the hands are NOT being controlled by the vive controller
       // This is also run if the vive isn't in use, and you're using a display
+      print("No controller/Display is not vive");
       return;
     }
 
