@@ -12,6 +12,7 @@ var DEBUG = false;
 var mapping = Controller.newMapping(MAPPING_NAME);
 
 // Add a route to the mapping object
+// Events are fired on Left Trigger presses
 mapping.from(Controller.Standard.LT).to(function (value) {
 
   var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance 
@@ -26,8 +27,10 @@ mapping.from(Controller.Standard.LT).to(function (value) {
 
   xmlhttp.onreadystatechange = function () {
     if (xmlhttp.status !== 200) {
-      print("Failed to save a datapoint");
-    } 
+      print("Failed to save an event point");
+    } else {
+      print("Event " + eventNumber + " saved!");
+    }
   };
 
   var req = {

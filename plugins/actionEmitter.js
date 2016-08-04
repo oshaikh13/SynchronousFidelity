@@ -5,8 +5,13 @@ var frame = 0;
 
 var DEBUG = false;
 
-function prettyPrint(obj) {
-  print(JSON.stringify(obj, null , 2));
+var SPAM_FRAME_COUNT = 25;
+
+// Avoid spamming the console with a ton of messages. Not fun.
+function avoidSpam(cb) {
+  if (frame % SPAM_FRAME_COUNT === 0) {
+    cb();
+  }
 }
 
 function replaceQuaternions(quatLocation, bodyPart) {
@@ -32,11 +37,19 @@ function sendToServer (req) {
   // you need to make a new instance for every HTTP request
 
   xmlhttp.onreadystatechange = function () {
+    var err = false;
+
     if (xmlhttp.status !== 200) {
-      print("Failed to save a datapoint");
-    } else {
-      print("Successfully sent data to server");
-    }
+      err = !err;
+    } 
+
+    avoidSpam(function(){
+      if (err) {
+        print("Failed to save a datapoint");
+      } else {
+        print("Successfully sent data to server");
+      }
+    })
   };
 
 
@@ -105,7 +118,10 @@ function getPositions () {
     if (!DEBUG && (!hands.leftHand.pose.valid || !hands.rightHand.pose.valid)) {
       // Checks if the hands are NOT being controlled by the vive controller
       // This is also run if the vive isn't in use, and you're using a display
-      print("No controller/Display is not vive");
+      avoidSpam(function(){
+        print("The controller is not connected and/or the HMD is not active");
+      });
+
       return;
     }
 
@@ -129,7 +145,6 @@ function getPositions () {
 
     sendToServer(req);
   }
-
 
   frame++;
 
