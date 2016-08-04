@@ -38,7 +38,7 @@ eventEmitter.js: https://www.dropbox.com/s/3zsrn38zy3jqp02/eventEmitter.js?dl=1
 
 Right click > edit > running scripts > from URL > and paste the above link in.
 
-Proceed to Developer > Logs, and ensure that the script is logging 'Successfully sent data to server'
+Proceed to Developer > Logs, and ensure that the script is logging 'Successfully sent data to server'. You may need to enable the developer menu. Go to settings, and check 'Developer Menu'
 
 ## Roadmap
 
