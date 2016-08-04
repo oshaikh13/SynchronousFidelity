@@ -3,7 +3,7 @@ High Fidelity Script for tracking head/hands
 
 ## About
 
-This is a High Fidelity project that allows users to track their movements and store them in a NoSQL database (MongoDB)
+This is a High Fidelity related project that allows users to track their movements and store them in a NoSQL database (MongoDB)
 
 ## Server Setup
 
@@ -40,6 +40,7 @@ Right click > edit > running scripts > from URL > and paste the above link in.
 
 Proceed to Developer > Logs, and ensure that the script is logging 'Successfully sent data to server'
 
-## Issues
+## Roadmap
 
-- [] Heroku fails to receive 1 out of 5 frames, and sends an empty response with error code 0.
+- [] Fix failure to receive 1 out of 5 frames. Could be Heroku throttling, or too many HTTP Requests for HiFi
+- [] Add a web client to visualize similarities in movements. Preferably live, while the actionEmitter is running.
