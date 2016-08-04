@@ -38,9 +38,9 @@ eventEmitter.js: https://www.dropbox.com/s/3zsrn38zy3jqp02/eventEmitter.js?dl=1
 
 Right click > edit > running scripts > from URL > and paste the above link in.
 
-Proceed to Developer > Logs, and ensure that the script is logging 'Successfully sent data to server'. You may need to enable the developer menu. Go to settings, and check 'Developer Menu'
+Proceed to Developer > Logs, and ensure that the script is logging 'Successfully sent data to server'. You may need to enable the developer menu to see it. Go to settings, and check 'Developer Menu'
 
 ## Roadmap
 
-- [] Fix failure to receive 1 out of 5 frames. Could be Heroku throttling, or too many HTTP Requests for HiFi
+- [] Fix failure to receive 1 out of 5 frames. Could be Heroku throttling or too many HTTP Requests for HiFi to handle
 - [] Add a web client to visualize similarities in movements. Preferably live, while the actionEmitter is running.
