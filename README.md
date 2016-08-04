@@ -21,7 +21,7 @@ $ npm install
 ## Plugin Description
 
 There are two plugins in the plugin folder. The action emitter is responsible for sending action data to the server on every third frame.
-The event emitter is only required if you are responsible for saving an event timestamp to the server. To send an event, hit the left trigger on the controller.
+The event emitter is only required if you are responsible for saving an event timestamp to the server. To send an event, hit the trigger on the right controller.
 
 ## Interface Setup
 

@@ -12,8 +12,8 @@ var DEBUG = false;
 var mapping = Controller.newMapping(MAPPING_NAME);
 
 // Add a route to the mapping object
-// Events are fired on Left Trigger presses
-mapping.from(Controller.Standard.LT).to(function (value) {
+// Events are fired on Right Trigger presses
+mapping.from(Controller.Standard.RT).to(function (value) {
 
   var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance 
   // you need to make a new instance for every HTTP request
