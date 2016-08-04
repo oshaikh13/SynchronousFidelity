@@ -5,7 +5,7 @@ var frame = 0;
 
 var DEBUG = false;
 
-var SPAM_FRAME_COUNT = 25;
+var SPAM_FRAME_COUNT = 50;
 
 // Avoid spamming the console with a ton of messages. Not fun.
 function avoidSpam(cb) {
@@ -60,6 +60,8 @@ function sendToServer (req) {
 }
 
 function getPositions () {
+
+  var incrementFrame = function() { frame++; };
 
   // Only send requests on every 3rd frame
   if (frame % 3 === 0) {
@@ -122,6 +124,8 @@ function getPositions () {
         print("The controller is not connected and/or the HMD is not active");
       });
 
+      incrementFrame();
+
       return;
     }
 
@@ -146,7 +150,7 @@ function getPositions () {
     sendToServer(req);
   }
 
-  frame++;
+  incrementFrame();
 
 }
 
