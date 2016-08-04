@@ -32,9 +32,9 @@ Next, add the plugin files into the interface.
 
 The plugins are hosted on dropbox. Here are the URLs
 
-actionEmitter.js: https://www.dropbox.com/s/d1n9rrcd83eag5q/actionEmitter.js?dl=1
+actionEmitter.js: https://cdn.rawgit.com/oshaikh13/SynchronousFidelity/master/plugins/actionEmitter.js
 
-eventEmitter.js: https://www.dropbox.com/s/3zsrn38zy3jqp02/eventEmitter.js?dl=1
+eventEmitter.js: https://cdn.rawgit.com/oshaikh13/SynchronousFidelity/master/plugins/eventEmitter.js
 
 Right click > edit > running scripts > from URL > and paste the above link in.
 
