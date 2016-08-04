@@ -26,28 +26,16 @@ function sendToServer (req) {
   // POST using XMLHttpRequest
   if (!req) {
     return; // 'undefined' or 'null' for whatever reason
-
   } 
-
-  if (frame % 50 === 0) {
-    JSON.stringify(req, null, 2);
-  }
-
 
   var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance 
   // you need to make a new instance for every HTTP request
 
-  if (DEBUG) {
-    return;
-  }
-
   xmlhttp.onreadystatechange = function () {
     if (xmlhttp.status !== 200) {
       print("Failed to save a datapoint");
-      prettyPrint(xmlhttp.responseType);
-      prettyPrint(xmlhttp.response);
     } else {
-      print("Saved a datapoint");
+      print("Successfully sent data to server");
     }
   };
 

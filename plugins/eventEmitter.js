@@ -47,9 +47,9 @@ mapping.from(Controller.Standard.LT).to(function (value) {
 });
 
 //Enable the new mapping
- Controller.enableMapping(MAPPING_NAME);
+Controller.enableMapping(MAPPING_NAME);
 
 // Disable the new mapping when the script ends
- Script.scriptEnding.connect(function () {
-     Controller.disableMapping(MAPPING_NAME);
+Script.scriptEnding.connect(function () {
+  Controller.disableMapping(MAPPING_NAME);
 });
