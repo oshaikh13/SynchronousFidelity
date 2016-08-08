@@ -51,11 +51,6 @@ var ActionSchema = new mongoose.Schema({
     roll: Number
   },
 
-  body: {
-    pitch: Number,
-    yaw: Number,
-    roll: Number
-  },
 
   timestamp: Number
 

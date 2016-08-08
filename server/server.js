@@ -1,3 +1,5 @@
+// TODO: ES6-ify
+
 // Load .env file only if not in production
 if (process.env.NODE_ENV != "production") {
   require('dotenv').config();
@@ -6,6 +8,8 @@ if (process.env.NODE_ENV != "production") {
 
 var express     = require('express'),
     mongoose    = require('mongoose');
+
+mongoose.Promise = global.Promise;
 
 var app = express(),
     cors = require('cors');

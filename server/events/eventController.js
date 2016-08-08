@@ -8,6 +8,7 @@ module.exports = {
   createEvent: function(req, res, next) {
 
     var newEvent = req.body;
+    newEvent.timestamp = Date.now();
 
     Event.create(newEvent, function(err, doc){
       if (err) {
