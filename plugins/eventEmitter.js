@@ -35,8 +35,7 @@ mapping.from(Controller.Standard.RT).to(function (value) {
 
   var req = {
     eventName: "Event " + eventNumber,
-    displayName: MyAvatar.displayName,
-    timestamp: Date.now()
+    displayName: MyAvatar.displayName
   };
 
   eventNumber++;

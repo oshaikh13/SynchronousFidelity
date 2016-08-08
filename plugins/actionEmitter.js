@@ -110,9 +110,7 @@ function getPositions () {
         pitch: MyAvatar.bodyPitch,
         yaw: MyAvatar.bodyYaw,
         roll: MyAvatar.bodyRoll
-      },
-
-      timestamp: Date.now()
+      }
     };
 
 

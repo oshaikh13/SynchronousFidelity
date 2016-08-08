@@ -41,7 +41,7 @@ function findClosestTimestamps(original, comparator) {
 }
 
 function costFunction(ideal, actual) {
-  return Math.pow((ideal - actual), 2);
+  return Math.abs((ideal - actual));
 }
 
 function costCalculator(original, comparator) {
@@ -49,17 +49,24 @@ function costCalculator(original, comparator) {
 
   var cost = [];
 
+  cost.push(['comparator_stamp']);
+  cost.push(['head_yaw']);
+  cost.push(['head_pitch']);
+  cost.push(['head_roll']);
+
+
   var smalllerIdx = original.length < comparator.length ? original.length : comparator.length;
 
   for (var i = 0; i < smalllerIdx; i++) {
-    console.log(costFunction(original[i].timestamp, comparator[i].timestamp));
+    // console.log(costFunction(original[i].timestamp, comparator[i].timestamp));
     // sqrt (ms) off from target. 
-    cost.push({
-      diff: costFunction(original[i].timestamp, comparator[i].timestamp),
-      head_pitch: costFunction(original[i].head.pitch, comparator[i].head.pitch),
-      head_yaw: costFunction(original[i].head.yaw, comparator[i].head.yaw),
-      head_roll: costFunction(original[i].head.roll, comparator[i].head.roll)
-    });
+
+    // c3charts format
+    cost[0].push(comparator[i].timestamp);
+    cost[1].push(costFunction(original[i].head.pitch, comparator[i].head.pitch));
+    cost[2].push(costFunction(original[i].head.yaw, comparator[i].head.yaw));
+    cost[3].push(costFunction(original[i].head.roll, comparator[i].head.roll));
+
   }
 
   return cost;
@@ -91,7 +98,7 @@ module.exports = {
 
     var newAction = req.body;
     newAction.timestamp = Date.now();
-    
+
     prettyPrint(newAction);
 
     Action.create(newAction, function(err, doc){
@@ -108,12 +115,51 @@ module.exports = {
     var original = req.query.original;
     var comparator = req.query.comparator;
 
+    var comparatorLimit = req.query.comparatorLimit;
+    var comparatorSkip = req.query.comparatorSkip;
+
+    var originalLimit = req.query.originalLimit;
+    var originalSkip = req.query.originalSkip;
+
+    var limit = req.query.limit;
+    var skip = req.query.skip;
+
+
+    if (limit) {
+      originalLimit = limit;
+      comparatorLimit = limit;
+    }
+
+    if (skip) {
+      originalSkip = skip;
+      comparatorSkip = skip;
+    }
+
     // The comparator is shifted.
     var frameShift = req.query.frameShift;
     var byAscendingOrder = {'displayName': -1};
 
-    var comparatorQuery = Action.find({'displayName': comparator}).sort(byAscendingOrder).lean();
-    var originalQuery = Action.find({'displayName': original}).sort(byAscendingOrder).lean();
+    var comparatorQuery = Action.find({'displayName': comparator}).sort(byAscendingOrder);
+    var originalQuery = Action.find({'displayName': original}).sort(byAscendingOrder);
+
+
+    if (comparatorLimit) {
+      comparatorQuery.limit(comparatorLimit);
+    }
+
+    if (comparatorSkip) {
+      comparatorQuery.skip(comparatorSkip);
+    }
+
+
+    if (originalLimit) {
+      originalQuery.limit(originalLimit);
+    }
+
+    if (originalSkip) {
+      originalQuery.skip(originalSkip);
+    }
+
     // Cache these requests
     var start = Date.now()
     Promise.all([originalQuery, comparatorQuery]).then(function(doc){

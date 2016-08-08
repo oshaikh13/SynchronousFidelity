@@ -1,0 +1,40 @@
+
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.css">
+  </head>
+  <body>
+    <h3>Dropoff</h3>
+    <div id="chart"></div>
+
+    <script src="https://npmcdn.com/axios/dist/axios.min.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.js"></script>
+    <script>
+
+      axios.get('/api/action/minimize?original=Omar&comparator=Omar&frameShift=5&skip=10&limit=200')
+
+        .then(function (response) {
+          console.log(response);
+
+          var chart = c3.generate({
+            bindto: '#chart',
+            data: {
+              x : 'comparator_stamp',
+              columns: response.data
+            },
+            axis : {
+              x : {
+                type : 'line'
+              }
+            }
+          });
+
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+
+    </script>
+  </body>
+</html>
