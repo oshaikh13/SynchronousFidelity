@@ -11,8 +11,6 @@ module.exports = function (app, express) {
   var eventRouter = express.Router();
   var compareRouter = express.Router();
 
-
-
   app.use(morgan('dev'));
   app.use(bodyParser.urlencoded({extended: true}));
   app.use(bodyParser.json());

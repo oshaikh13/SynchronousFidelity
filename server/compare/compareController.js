@@ -6,25 +6,40 @@ function threeDimensionalDistance(x1, y1, z1, x2, y2, z2) {
 }
 
 function getActionCompareQuery(username, timestamp, sort) {
-  return Action
-    .find(
-      {
-        timestamp: {
-          $lte: timestamp
-        },
 
-        username: {
-          $eq: username
-        }
-      }
-    )
+  var qry = {
+    timestamp: {
+
+    },
+
+    displayName: {
+      $eq: username
+    }
+  }
+
+  qry.timestamp[(sort === -1 ? "$lte" : '$gt')] = timestamp;
+
+  return Action
+    .find(qry)
     .sort({timestamp: sort})
-    .limit(1);;
+    .limit(1).exec();
 }
 
 function getCloserObject(obj1, obj2, timestamp) {
-  var x = Math.abs(obj1.timestamp - timestamp);
-  var y = Math.abs(obj2.timestamp - timestamp);
+
+  console.log("comparing");
+  console.log(obj1, obj2, timestamp);
+
+  if (!obj1.length) {
+    return obj2;
+  }
+
+  if (!obj2.length) {
+    return obj1;
+  }
+
+  var x = Math.abs(obj1[0].timestamp - timestamp);
+  var y = Math.abs(obj2[0].timestamp - timestamp);
 
   if (x > y) {
     return obj2;
@@ -42,40 +57,56 @@ module.exports = {
 
     // Origin
     var closestBelowUser = getActionCompareQuery(req.body.username, firstTimestamp, -1);
-    var closestAboveUser = getActionCompareQuery(req.body.username, firstTimestamp, 1)
+    var closestAboveUser = getActionCompareQuery(req.body.username, firstTimestamp, 1);
 
     var closestBelowComparator = getActionCompareQuery(req.body.comparator, firstTimestamp, -1)
-    var closestAboveComparator = getActionCompareQuery(req.body.comparator, firstTimestamp, 1)
+    var closestAboveComparator = getActionCompareQuery(req.body.comparator, firstTimestamp, 1);
 
 
     // offset
     var closestBelowUserOffset = getActionCompareQuery(req.body.username, seconedTimestamp, -1);
-    var closestAboveUserOffset = getActionCompareQuery(req.body.username, seconedTimestamp, 1)
+    var closestAboveUserOffset = getActionCompareQuery(req.body.username, seconedTimestamp, 1);
 
     var closestBelowComparatorOffset = getActionCompareQuery(req.body.comparator, seconedTimestamp, -1)
-    var closestAboveComparatorOffset = getActionCompareQuery(req.body.comparator, seconedTimestamp, 1)
+    var closestAboveComparatorOffset = getActionCompareQuery(req.body.comparator, seconedTimestamp, 1);
 
 
-    Promise.all(
-      [
-        closestAboveUser, 
-        closestBelowUser, 
-        closestAboveComparator, 
-        closestBelowComparator,
-        closestBelowUserOffset,
-        closestAboveUserOffset,
-        closestAboveComparatorOffset,
-        closestBelowComparatorOffset
-      ], function(resolvedArray){
+    var promises = [
+      closestBelowUser, 
+      closestAboveUser, 
+      closestBelowComparator, 
+      closestAboveComparator,
+      closestBelowUserOffset,
+      closestAboveUserOffset,
+      closestBelowComparatorOffset,
+      closestAboveComparatorOffset
+    ];
 
-        var closestUser = getCloserObject(resolvedArray[0], resolvedArray[1], firstTimestamp);
-        var closestComparator = getCloserObject(resolvedArray[2], resolvedArray[3], firstTimestamp);
-        var closestUserOffset = getCloserObject(resolvedArray[4], resolvedArray[5], seconedTimestamp);
-        var closestComparatorOffset = getCloserObject(resolvedArray[6], resolvedArray[7], seconedTimestamp);
 
-        res.send([closestUser, closestComparator, closestUserOffset, closestComparatorOffset]);
+    // Makeshift promise.all
+    var fulfilled = 0;
+
+    var completedPromise = [0, 0, 0, 0, 0, 0, 0, 0]; 
+
+    promises.forEach(function(promise, idx){
+
+      promise.then(function(doc){
+        fulfilled++;
+        completedPromise[idx] = doc;
+
+        if (fulfilled === promises.length) {
+
+          var closestUser = getCloserObject(completedPromise[0], completedPromise[1], firstTimestamp);
+          var closestComparator = getCloserObject(completedPromise[2], completedPromise[3], firstTimestamp);
+          var closestUserOffset = getCloserObject(completedPromise[4], completedPromise[5], seconedTimestamp);
+          var closestComparatorOffset = getCloserObject(completedPromise[6], completedPromise[7], seconedTimestamp);
+          res.send([closestUser, closestComparator, closestUserOffset, closestComparatorOffset]);
+
+        }
+      });
 
     })
+
     // First compare to yourself.
 
     // Then get the other person, and compare him to himself
