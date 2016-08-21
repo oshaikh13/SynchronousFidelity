@@ -24,6 +24,7 @@
       params.INTERVAL = parseInt(params.INTERVAL);
       params.msOffset = parseInt(params.msOffset);
       params.evtIntervals = parseInt(params.evtIntervals);
+      params.display = parseInt(params.display);
 
       var similarityData = ['similarity'];
       var userDistData = ['User distance'];
@@ -99,6 +100,7 @@
       function startChartLoad () {
 
         var times = 1;
+        var loaded = 0;
 
         var apiRequests = setInterval(function(){
           // var currentTime = times;
@@ -151,6 +153,12 @@
             // We can't be sure that this request is the last one
             // EVEN if we dispatch it a full second later!
             similarityData.push((smaller/bigger) * 100);
+            loaded++;
+            if (params.display && loaded >= params.display) {
+              userDistData.splice(1, 1);
+              comaparatorDistData.splice(1, 1);
+              similarityData.splice(1, 1);
+            }
 
             similarity.load({
               columns: [
