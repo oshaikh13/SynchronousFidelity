@@ -1,64 +1,17 @@
 var Action = require('../actions/actionModel.js');
 var Event = require('../events/eventModel.js');
 
+
+// If I were to over-engineer this, I'd add Redis here :p
 var simpleCache = {
-
-}
-
-function getActionCompareQuery(username, timestamp, sort) {
-
-  var qry = {
-    timestamp: {
-
-    },
-
-    displayName: {
-      $eq: username
-    }
-  }
-
-  qry.timestamp[(sort === -1 ? "$lte" : '$gt')] = timestamp;
-
-  return Action
-    .find(qry)
-    .sort({timestamp: sort})
-    .limit(1).exec();
-}
-
-function getCloserObject(obj1, obj2, timestamp) {
-
-  if (!obj1.length) {
-    return obj2;
-  }
-
-  if (!obj2.length) {
-    return obj1;
-  }
-
-  var x = Math.abs(obj1[0].timestamp - timestamp);
-  var y = Math.abs(obj2[0].timestamp - timestamp);
-
-  if (x > y) {
-    return obj2;
-  }
-
-  return obj1;
 
 }
 
 
 function getEventTimestampQuery(evtName) {
 
-  function fakePromise (resolveValue) {
-    return {
-      then: function(cb){
-        cb(resolveValue);
-      }
-    }
-  }
-
   if (simpleCache[evtName]) {
-    return fakePromise(simpleCache[evtName]);
+    return Promise.resolve(simpleCache[evtName]);
   } else if (evtName) {
 
     var qry = {
@@ -72,9 +25,41 @@ function getEventTimestampQuery(evtName) {
       .limit(1).exec();
   }
 
-  return fakePromise(null)
+  return Promise.resolve(null);
   
 }
+
+function queryAllFrames (user, comparator, timestamp, offset, cb) {
+
+  console.log(arguments);
+
+  var comparatorFrames = Action.find(
+    {
+      displayName: comparator,
+      timestamp: 
+        {
+          $gte: timestamp - offset, 
+          $lte: timestamp
+        }
+    }
+  ).exec();
+
+  var userFrames = Action.find(
+    {
+      displayName: user,
+      timestamp: 
+        {
+          $gte: timestamp - offset, 
+          $lte: timestamp
+        }
+    }
+  ).exec();
+
+  return Promise.all([userFrames, comparatorFrames]);
+
+}
+
+
 
 module.exports = {
   eventTimestamp: function(req, res, next) {
@@ -85,8 +70,33 @@ module.exports = {
     })
   },
 
-  distancePoints: function(req, res, next) {
+  rCorrelation: function(req, res, next) {
 
+    // Only runs when EVT is passed.
+
+
+    if (!req.query.timestamp) {
+      req.query.timestamp = Date.now();
+    }
+
+    if (!req.query.offset) {
+      req.query.offset = 500; //ms
+    } else {
+      // + in front of an integer converts it into an int! yay
+      req.query.offset = +req.query.offset;
+    }
+
+
+
+    if (isNaN(req.query.offset)) {
+      res.status(400).send("Illegal params");
+      return;
+    }
+
+    if (!req.query.timestamp || !req.query.offset || !req.query.username || !req.query.comparator) {
+      res.status(400).send("Illegal params");
+      return;
+    }
 
     getEventTimestampQuery(req.query.evt).then(function(foundEvt){
 
@@ -94,77 +104,37 @@ module.exports = {
         simpleCache[req.query.evt] = foundEvt;
       }
 
-      if (!foundEvt) foundEvt = [{}];
-
-      var evtStamp = foundEvt[0].timestamp;
-
-      if (req.query.evtOffset) {
-        evtStamp += parseInt(req.query.evtOffset);
-      } 
-      
-
-      var firstTimestamp = req.query.firstTimestamp || evtStamp || Date.now(); // given integer
-      var seconedTimestamp = firstTimestamp - req.query.msOffset;
-
-      // Origin
-      var closestBelowUser = getActionCompareQuery(req.query.username, firstTimestamp, -1);
-      var closestAboveUser = getActionCompareQuery(req.query.username, firstTimestamp, 1);
-
-      var closestBelowComparator = getActionCompareQuery(req.query.comparator, firstTimestamp, -1)
-      var closestAboveComparator = getActionCompareQuery(req.query.comparator, firstTimestamp, 1);
+      if (foundEvt) {
+        req.query.timestamp = foundEvt[0].timestamp;
+      }
 
 
-      // offset
-      var closestBelowUserOffset = getActionCompareQuery(req.query.username, seconedTimestamp, -1);
-      var closestAboveUserOffset = getActionCompareQuery(req.query.username, seconedTimestamp, 1);
-
-      var closestBelowComparatorOffset = getActionCompareQuery(req.query.comparator, seconedTimestamp, -1)
-      var closestAboveComparatorOffset = getActionCompareQuery(req.query.comparator, seconedTimestamp, 1);
+      return queryAllFrames(req.query.username, req.query.comparator, req.query.timestamp, req.query.offset);
 
 
-      var promises = [
-        closestBelowUser, 
-        closestAboveUser, 
-        closestBelowComparator, 
-        closestAboveComparator,
-        closestBelowUserOffset,
-        closestAboveUserOffset,
-        closestBelowComparatorOffset,
-        closestAboveComparatorOffset
-      ];
-
-
-      // Makeshift promise.all
-      var fulfilled = 0;
-
-      var completedPromise = [0, 0, 0, 0, 0, 0, 0, 0]; 
-
-      promises.forEach(function(promise, idx){
-
-        promise.then(function(doc){
-          fulfilled++;
-          completedPromise[idx] = doc;
-
-          if (fulfilled === promises.length) {
-
-            var closestUser = getCloserObject(completedPromise[0], completedPromise[1], firstTimestamp);
-            var closestComparator = getCloserObject(completedPromise[2], completedPromise[3], firstTimestamp);
-            var closestUserOffset = getCloserObject(completedPromise[4], completedPromise[5], seconedTimestamp);
-            var closestComparatorOffset = getCloserObject(completedPromise[6], completedPromise[7], seconedTimestamp);
-            res.send({
-              closestUser: closestUser[0],
-              closestComparator: closestComparator[0],
-              closestUserOffset: closestUserOffset[0],
-              closestComparatorOffset: closestUser[0]
-            });
-
-          }
-        });
-
-      });
-
-    })
+    }).then(function(resolvedValue){
+      res.status(200).send(resolvedValue);
+    }).catch(function(err){
+      res.status(400).send(err);
+    });
 
   }
+
 }
+
+// TODO:
+// 1. Find distance diffs between each frame
+// 2. Run some sort of R correleation. (However, we may have a larger/smaller dataset in the pair...)
+
+
+
+
+
+
+
+
+
+
+
+
 

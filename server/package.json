@@ -4,7 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "heroku" : "cd .. && git subtree push --prefix server heroku master"
   },
   "author": "Omar Shaikh <oshaikh13@gmail.com> (http://www.oshaikh.com)",
   "license": "ISC",
