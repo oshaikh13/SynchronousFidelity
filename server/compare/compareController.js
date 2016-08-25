@@ -1,6 +1,6 @@
 var Action = require('../actions/actionModel.js');
 var Event = require('../events/eventModel.js');
-
+var compareUtils = require('./compareUtils.js')
 
 // If I were to over-engineer this, I'd add Redis here :p
 var simpleCache = {
@@ -31,27 +31,31 @@ function getEventTimestampQuery(evtName) {
 
 function queryAllFrames (user, comparator, timestamp, offset, cb) {
 
-  console.log(arguments);
+  // Meant to handle a negative offset.
+  // We can't query biggerNum < x < smallerNum
+  function getTimestampQuery (timestamp, offset) {
+    if (offset < 0) {
+      return {
+        $gte: timestamp, 
+        $lte: timestamp - offset
+      }
+    } else return {
+      $gte: timestamp - offset, 
+      $lte: timestamp      
+    }
+  }
 
   var comparatorFrames = Action.find(
     {
       displayName: comparator,
-      timestamp: 
-        {
-          $gte: timestamp - offset, 
-          $lte: timestamp
-        }
+      timestamp: getTimestampQuery(timestamp, offset)
     }
   ).exec();
 
   var userFrames = Action.find(
     {
       displayName: user,
-      timestamp: 
-        {
-          $gte: timestamp - offset, 
-          $lte: timestamp
-        }
+      timestamp: getTimestampQuery(timestamp, offset)
     }
   ).exec();
 
@@ -60,6 +64,62 @@ function queryAllFrames (user, comparator, timestamp, offset, cb) {
 }
 
 
+function sumFrameDistances (personA, personB) {
+
+  // TODO: Add this obj to the frame so we can align it later.
+  function interval (start, end) {
+    var obj = {};
+    obj.start = start;
+    obj.end = end;
+  }
+
+  function getDistanceSum (frame1, frame2) {
+
+
+    var frame1LeftHand = frame1.hands.leftHand.position;
+    var frame2LeftHand = frame2.hands.leftHand.position;
+
+    var distLeftHand = compareUtils
+                        .threeDimensionalDistance(frame1LeftHand, frame2LeftHand);
+
+    var frame1RightHand = frame1.hands.rightHand.position;
+    var frame2RightHand = frame2.hands.rightHand.position;
+
+    var distRightHand = compareUtils
+                        .threeDimensionalDistance(frame1RightHand, frame2RightHand);
+
+    var frame1Head = frame1.head.position;
+    var frame2Head = frame2.head.position;
+
+    var distHead = compareUtils
+                        .threeDimensionalDistance(frame1Head, frame2Head);
+
+    return distHead + distLeftHand + distRightHand; // You don't have to "sum" them.
+
+  }
+
+  function dualFrameMap (person, cb) {
+    var newArr = [];
+    for (var i = 0; i < person.length - 1; i++) {
+      var frame1 = person[i];
+      var frame2 = person[i + 1];
+      newArr.push(cb(frame1, frame2));
+    }
+
+    return newArr;
+  }
+
+  var personADistances = dualFrameMap(personA, function(frame1, frame2){
+    return getDistanceSum(frame1, frame2);
+  })
+
+  var personBDistances = dualFrameMap(personB, function(frame1, frame2){
+    return getDistanceSum(frame1, frame2);
+  });
+
+  return compareUtils.getPearsonCorrelation(personADistances, personBDistances);
+
+}
 
 module.exports = {
   eventTimestamp: function(req, res, next) {
@@ -82,7 +142,7 @@ module.exports = {
     if (!req.query.offset) {
       req.query.offset = 500; //ms
     } else {
-      // + in front of an integer converts it into an int! yay
+      // + in front of an string casts it into an int. yay
       req.query.offset = +req.query.offset;
     }
 
@@ -113,7 +173,11 @@ module.exports = {
 
 
     }).then(function(resolvedValue){
-      res.status(200).send(resolvedValue);
+
+      var R = sumFrameDistances(resolvedValue[0], resolvedValue[1]);
+
+      res.status(200).send({R: R});
+
     }).catch(function(err){
       res.status(400).send(err);
     });
