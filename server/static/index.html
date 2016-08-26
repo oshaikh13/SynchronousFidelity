@@ -4,8 +4,8 @@
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.css">
   </head>
   <body>
-    <h3>% similarity</h3>
-    <div id="similarity"></div>
+    <h3>R Correlation</h3>
+    <div id="r-correlation"></div>
     <h3>User distance</h3>
     <div id="user-dist"></div>
     <h3>Comparator distance</h3>
@@ -19,189 +19,34 @@
     <script>
 
 
-      var params = simpleQueryString.parse(location.hash);
+    var rCorrelation = ['R Correlation'];
 
-      params.INTERVAL = parseInt(params.INTERVAL);
-      params.msOffset = parseInt(params.msOffset);
-      params.evtIntervals = parseInt(params.evtIntervals);
-      params.display = parseInt(params.display);
+    var rCorrelation = c3.generate({
+      bindto: "#r-correlation",
+      data: {
+        columns: [
+          rCorrelation
+        ],
+        type: 'spline'
+      }
+    });
 
-      var similarityData = ['similarity'];
-      var userDistData = ['User distance'];
-      var comaparatorDistData = ['Comparator distance'];
 
 
-      var similarity = c3.generate({
-        bindto: "#similarity",
-        data: {
-          columns: [
-            similarityData
-          ],
-          type: 'spline'
+
+
+    var fetchDataInterval = setInterval(function() { 
+      axios.get('/api/compare/correlation', {
+        params: {
+          username: "Omar",
+          comparator: "notcreepyeyes",
+          offset: 1000
         }
+      }).then(function(response){
+        console.log(response);
       });
-
-      var userdist = c3.generate({
-        bindto: "#user-dist",
-        data: {
-          columns: [
-            similarityData
-          ],
-          type: 'spline'
-        }
-      });
-
-      var comparatordist = c3.generate({
-        bindto: "#comparator-dist",
-        data: {
-          columns: [
-            similarityData
-          ],
-          type: 'spline'
-        }
-      });
-
-
-      // Overriding the url parameters here, for dev reasons
-      // params = {
-      //   INTERVAL: 1000,
-      //   evt: encodeURIComponent("Event 1"),
-      //   msOffset: 1000,
-      //   username: "Omar",
-      //   comparator: "notcreepyeyes",
-      //   times: 50
-      // }
-
-      function validParams (params) {
-
-        var regularParamsExist = params.INTERVAL && params.msOffset && params.evt && params.username && params.comparator && params.evtIntervals;
-
-        var specialParamsExist = params.evt && params.evtIntervals;
-
-        if (!regularParamsExist) {
-          return false;
-        }
-
-        if (regularParamsExist && specialParamsExist) {
-          return true
-        }
-
-        if (regularParamsExist && (params.evt || params)) {
-          return false;
-        }
-
-        return false;
-
-      }
-
-      console.log(params);
-      if (validParams(params)) {
-        startChartLoad();
-      }
-
-      function startChartLoad () {
-
-        var times = 1;
-        var loaded = 0;
-
-        var apiRequests = setInterval(function(){
-          // var currentTime = times;
-          axios.get(
-            '/api/compare/distance?username=' 
-            + params.username +
-            '&comparator='
-            + params.comparator + 
-            '&evt=' 
-            + params.evt + 
-            '&msOffset='
-            + params.msOffset + 
-            '&evtOffset=' + (times * params.INTERVAL)
-          ).then(function(response){
-
-            var userHand = 
-              response.data.closestUser.hands.leftHand.position;
-            var userHandOffset = 
-              response.data.closestUserOffset.hands.leftHand.position;
-
-            var comparatorHand = 
-              response.data.closestComparator.hands.leftHand.position;
-            var comparatorHandOffset = 
-              response.data.closestComparatorOffset.hands.leftHand.position;
-
-            var distUser = threeDimensionalDistance(
-              userHandOffset.x,
-              userHandOffset.y,
-              userHandOffset.z,
-              userHand.x, 
-              userHand.y, 
-              userHand.z
-            );
-
-            var distComparator = threeDimensionalDistance(
-              comparatorHandOffset.x,
-              comparatorHandOffset.y,
-              comparatorHandOffset.z,
-              comparatorHand.x, 
-              comparatorHand.y, 
-              comparatorHand.z
-            );
-
-            var smaller = distComparator < distUser ? distComparator : distUser;
-            var bigger = distComparator > distUser ? distComparator : distUser;
-
-            userDistData.push(distUser);
-            comaparatorDistData.push(distComparator);
-
-            // We can't be sure that this request is the last one
-            // EVEN if we dispatch it a full second later!
-            similarityData.push((smaller/bigger) * 100);
-            loaded++;
-            if (params.display && loaded >= params.display) {
-              userDistData.splice(1, 1);
-              comaparatorDistData.splice(1, 1);
-              similarityData.splice(1, 1);
-            }
-
-            similarity.load({
-              columns: [
-                similarityData
-              ]
-            });
-
-            userdist.load({
-              columns: [
-                userDistData
-              ]
-            });
-
-            comparatordist.load({
-              columns: [
-                comaparatorDistData
-              ]
-            })
-
-
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
-
-
-
-          times++;
-
-          if (params.evtIntervals && times === params.evtIntervals) {
-            clearInterval(apiRequests);
-
-          }
-
-        }, params.INTERVAL)
-      }
-
-      function threeDimensionalDistance (x1, y1, z1, x2, y2, z2) {
-        return Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1)+(z2-z1)*(z2-z1));
-      }
-
+    }, 250)
+    
 
     </script>
   </body>
