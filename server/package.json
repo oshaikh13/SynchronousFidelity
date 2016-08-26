@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "heroku" : "cd .. && git subtree push --prefix server heroku master"
+    "heroku": "cd .. && git subtree push --prefix server heroku master",
+    "start": "nodemon server.js"
   },
   "author": "Omar Shaikh <oshaikh13@gmail.com> (http://www.oshaikh.com)",
   "license": "ISC",
@@ -15,6 +16,7 @@
     "dotenv": "^2.0.0",
     "express": "^4.14.0",
     "mongoose": "^4.5.5",
-    "morgan": "^1.7.0"
+    "morgan": "^1.7.0",
+    "nodemon": "^1.10.2"
   }
 }
