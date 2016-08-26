@@ -29,7 +29,7 @@ function getEventTimestampQuery(evtName) {
   
 }
 
-function queryAllFrames (user, comparator, timestamp, offset, cb) {
+function queryAllFrames (user, comparator, timestamp, offset) {
 
   // Meant to handle a negative offset.
   // We can't query biggerNum < x < smallerNum
@@ -109,15 +109,25 @@ function sumFrameDistances (personA, personB) {
     return newArr;
   }
 
-  var personADistances = dualFrameMap(personA, function(frame1, frame2){
-    return getDistanceSum(frame1, frame2);
-  })
-
-  var personBDistances = dualFrameMap(personB, function(frame1, frame2){
-    return getDistanceSum(frame1, frame2);
+  var distancePersonA = 0;
+  var personADistances = dualFrameMap(personA, function(frame1, frame2) {
+    var distMoved = getDistanceSum(frame1, frame2);
+    distancePersonA += distMoved;
+    return distMoved;
   });
 
-  return compareUtils.getPearsonCorrelation(personADistances, personBDistances);
+  var distancePersonB = 0;
+  var personBDistances = dualFrameMap(personB, function(frame1, frame2) {
+    var distMoved = getDistanceSum(frame1, frame2);
+    distancePersonB += distMoved;
+    return distMoved;
+  });
+
+  return {
+    R: compareUtils.getPearsonCorrelation(personADistances, personBDistances),
+    distancePersonA: distancePersonA,
+    distancePersonB: distancePersonB
+  };
 
 }
 
@@ -174,9 +184,15 @@ module.exports = {
 
     }).then(function(resolvedValue){
 
-      var R = sumFrameDistances(resolvedValue[0], resolvedValue[1]);
+      var result = sumFrameDistances(resolvedValue[0], resolvedValue[1]);
 
-      res.status(200).send({R: R});
+      res.status(200).send(
+        {
+          distanceUserMoved: result.distancePersonA,
+          distanceComparatorMoved: result.distancePersonB,
+          R: result.R
+        }
+      );
 
     }).catch(function(err){
       res.status(400).send(err);
@@ -189,13 +205,6 @@ module.exports = {
 // TODO:
 // 1. Find distance diffs between each frame
 // 2. Run some sort of R correleation. (However, we may have a larger/smaller dataset in the pair...)
-
-
-
-
-
-
-
 
 
 
