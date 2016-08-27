@@ -7,9 +7,9 @@
     <h3>R Correlation</h3>
     <div id="r-correlation"></div>
     <h3>User distance</h3>
-    <div id="user-dist"></div>
+    <div id="userdist"></div>
     <h3>Comparator distance</h3>
-    <div id="comparator-dist"></div>
+    <div id="comparatordist"></div>
 
     <script src="https://npmcdn.com/axios/dist/axios.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
@@ -19,9 +19,13 @@
     <script>
 
 
-    var rCorrelation = ['R Correlation'];
+    var MAX_X_AXIS_VALUES_DISPLAYED = 30;
 
-    var rCorrelation = c3.generate({
+    var rCorrelation = ['R Correlation'];
+    var userDist = ['User Distance'];
+    var comparatorDist = ['Comparator Distance'];
+
+    var rCorrelationGraph = c3.generate({
       bindto: "#r-correlation",
       data: {
         columns: [
@@ -31,9 +35,25 @@
       }
     });
 
+    var userDistGraph = c3.generate({
+      bindto: "#userdist",
+      data: {
+        columns: [
+          userDist
+        ],
+        type: 'spline'
+      }
+    });
 
-
-
+    var comparatorDistGraph = c3.generate({
+      bindto: "#comparatordist",
+      data: {
+        columns: [
+          userDist
+        ],
+        type: 'spline'
+      }
+    });
 
     var fetchDataInterval = setInterval(function() { 
       axios.get('/api/compare/correlation', {
@@ -43,7 +63,40 @@
           offset: 1000
         }
       }).then(function(response){
-        console.log(response);
+
+        function updateGraph (graph, data) {
+          graph.load({
+            columns: [
+              data
+            ]
+          });
+        }
+
+        function arrayLimter (arr, value, index, numElements, limit) {
+          if (value !== null && value !== undefined) {
+            if (arr.length > limit) {
+              arr.splice(index, numElements);
+            }
+          } else return false;
+
+          arr.push(value);
+          return true;
+
+        }
+
+        if (arrayLimter(rCorrelation, response.data.R, 1, 1, 30)) {
+          updateGraph(rCorrelationGraph, rCorrelation);
+        }
+
+        if (arrayLimter(userDist, response.data.distanceUserMoved, 1, 1, 30)) {
+          updateGraph(userDistGraph, userDist);
+        }
+
+        if (arrayLimter(comparatorDist, response.data.distanceComparatorMoved, 1, 1, 30)) {
+          updateGraph(comparatorDistGraph, comparatorDist);
+        }
+
+
       });
     }, 250)
     
