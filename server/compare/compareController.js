@@ -22,7 +22,7 @@ function getEventTimestampQuery(evtName) {
 
     return Event
       .find(qry)
-      .limit(1).exec();
+      .limit(1).lean().exec();
   }
 
   return Promise.resolve(null);
@@ -50,14 +50,14 @@ function queryAllFrames (user, comparator, timestamp, offset) {
       displayName: comparator,
       timestamp: getTimestampQuery(timestamp, offset)
     }
-  ).exec();
+  ).lean().exec();
 
   var userFrames = Action.find(
     {
       displayName: user,
       timestamp: getTimestampQuery(timestamp, offset)
     }
-  ).exec();
+  ).lean().exec();
 
   return Promise.all([userFrames, comparatorFrames]);
 
@@ -201,13 +201,4 @@ module.exports = {
   }
 
 }
-
-// TODO:
-// 1. Find distance diffs between each frame
-// 2. Run some sort of R correleation. (However, we may have a larger/smaller dataset in the pair...)
-
-
-
-
-
 
