@@ -19,6 +19,12 @@
     <script>
 
 
+    var params = simpleQueryString.parse(location.hash);   
+    var username = params.username || "notcreepyeyes";
+    var comparator = params.comparator || "Omar"; 
+
+    console.log(username, comparator);
+
     var MAX_X_AXIS_VALUES_DISPLAYED = 30;
 
     var rCorrelation = ['R Correlation'];
@@ -58,8 +64,8 @@
     var fetchDataInterval = setInterval(function() { 
       axios.get('/api/compare/correlation', {
         params: {
-          username: "Omar",
-          comparator: "notcreepyeyes",
+          username: username,
+          comparator: comparator,
           offset: 1000
         }
       }).then(function(response){
