@@ -31,6 +31,16 @@
     var userDist = ['User Distance'];
     var comparatorDist = ['Comparator Distance'];
 
+    var distYAxes = {
+      min: 0,
+      max: 15
+    }
+
+    var correlationYAxes = {
+      min: -1,
+      max: 1
+    }
+
     var rCorrelationGraph = c3.generate({
       bindto: "#r-correlation",
       data: {
@@ -38,6 +48,10 @@
           rCorrelation
         ],
         type: 'spline'
+      },
+
+      axis: {
+        y: correlationYAxes
       }
     });
 
@@ -48,6 +62,10 @@
           userDist
         ],
         type: 'spline'
+      },
+
+      axis: {
+        y: distYAxes
       }
     });
 
@@ -58,6 +76,10 @@
           userDist
         ],
         type: 'spline'
+      },
+
+      axis: {
+        y: distYAxes
       }
     });
 
@@ -66,7 +88,7 @@
         params: {
           username: username,
           comparator: comparator,
-          offset: 1000
+          offset: 5000
         }
       }).then(function(response){
 
