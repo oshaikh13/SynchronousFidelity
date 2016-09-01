@@ -186,11 +186,16 @@ module.exports = {
 
       var result = sumFrameDistances(resolvedValue[0], resolvedValue[1]);
 
+      // At the last offset, how close are both of you.
+      var personALastFrame = resolvedValue[0][resolvedValue[0].length - 1].head.position;
+      var personBLastFrame = resolvedValue[1][resolvedValue[1].length - 1].head.position;
+
       res.status(200).send(
         {
           distanceUserMoved: result.distancePersonA,
           distanceComparatorMoved: result.distancePersonB,
-          R: result.R
+          R: result.R,
+          distanceBetweenUsers: compareUtils.threeDimensionalDistance(personALastFrame, personBLastFrame)
         }
       );
 
