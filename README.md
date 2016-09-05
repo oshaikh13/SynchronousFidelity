@@ -5,6 +5,8 @@ High Fidelity Script for tracking head/hands
 
 This is a High Fidelity related project that allows users to track their movements and store them in a NoSQL database (MongoDB)
 
+It also has a really sick API that lets you query for Pearson's R correlation between the distance two users have moved in a time interval
+
 ## Server Setup
 
 *NOTE: This is for setting up a local server, and is not REQUIRED*
@@ -43,4 +45,5 @@ Proceed to Developer > Logs, and ensure that the script is logging 'Successfully
 ## Roadmap
 
 - [] Fix failure to receive 1 out of 5 frames. Could be Heroku throttling or too many HTTP Requests for HiFi to handle
-- [] Add a web client to visualize similarities in movements. Preferably live, while the actionEmitter is running.
+- [X] Add a web client to visualize similarities in movements. Preferably live, while the actionEmitter is running.
+- [] Extend the API so we can query for Pearson's R correlation between 2+ people (is this even possible?)
