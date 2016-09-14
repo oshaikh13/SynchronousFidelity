@@ -10,7 +10,7 @@ module.exports = {
     var newAction = req.body;
     newAction.timestamp = Date.now();
 
-    prettyPrint(newAction);
+    // prettyPrint(newAction);
 
     Action.create(newAction, function(err, doc){
 

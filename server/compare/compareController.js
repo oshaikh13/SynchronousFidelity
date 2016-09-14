@@ -123,6 +123,8 @@ function sumFrameDistances (personA, personB) {
     return distMoved;
   });
 
+  // console.log(distancePersonA, distancePersonB);
+
   return {
     R: compareUtils.getPearsonCorrelation(personADistances, personBDistances),
     distancePersonA: distancePersonA,

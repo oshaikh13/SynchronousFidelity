@@ -16,10 +16,10 @@ module.exports = {
         shortestArrayLength = x.length;
     } else if(x.length > y.length) {
         shortestArrayLength = y.length;
-        console.error('x has more items in it, the last ' + (x.length - shortestArrayLength) + ' item(s) will be ignored');
+        // console.error('x has more items in it, the last ' + (x.length - shortestArrayLength) + ' item(s) will be ignored');
     } else {
         shortestArrayLength = x.length;
-        console.error('y has more items in it, the last ' + (y.length - shortestArrayLength) + ' item(s) will be ignored');
+        // console.error('y has more items in it, the last ' + (y.length - shortestArrayLength) + ' item(s) will be ignored');
     }
   
     var xy = [];
