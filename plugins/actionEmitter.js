@@ -1,11 +1,14 @@
 
 var baseURL = "https://salty-stream-30260.herokuapp.com/"
+// DEV
+// var baseURL = "http://localhost:8000/"
 
 var frame = 0;
 
 var DEBUG = false;
 
 var SPAM_FRAME_COUNT = 50;
+
 
 // Avoid spamming the console with a ton of messages. Not fun.
 function avoidSpam(cb) {
@@ -39,16 +42,10 @@ function sendToServer (req) {
   xmlhttp.onreadystatechange = function () {
     var err = false;
 
-    if (xmlhttp.status !== 200) {
-      err = !err;
-    } 
+    err = xmlhttp.status;
 
     avoidSpam(function(){
-      if (err) {
-        print("Failed to save a datapoint");
-      } else {
-        print("Successfully sent data to server");
-      }
+      print("Saved to server with response code: " + err);
     })
   };
 
@@ -115,7 +112,9 @@ function getPositions () {
 
 
     var hands = req.hands;
-    if (!DEBUG && (!hands.leftHand.pose.valid || !hands.rightHand.pose.valid)) {
+
+
+    if (!DEBUG && (!hands.leftHand.pose.valid || !hands.rightHand.pose.valid || !HMD.active)) {
       // Checks if the hands are NOT being controlled by the vive controller
       // This is also run if the vive isn't in use, and you're using a display
       avoidSpam(function(){

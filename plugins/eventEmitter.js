@@ -1,5 +1,7 @@
 
 var baseURL = "https://salty-stream-30260.herokuapp.com/"
+// DEV 
+// var baseURL = "http://localhost:8000/"
 
 // The name of the new mapping
 var MAPPING_NAME = "com.synchronousfidelity.events.controller";
@@ -26,11 +28,7 @@ mapping.from(Controller.Standard.RT).to(function (value) {
   if (DEBUG) return;
 
   xmlhttp.onreadystatechange = function () {
-    if (xmlhttp.status !== 200) {
-      print("Failed to save an event point");
-    } else {
-      print("Event " + eventNumber + " saved!");
-    }
+    print("Saved to server with response code: " + xmlhttp.status);
   };
 
   var req = {
