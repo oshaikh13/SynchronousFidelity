@@ -2,7 +2,7 @@ var morgan      = require('morgan'), // used for logging incoming request
     bodyParser  = require('body-parser')
 
 
-module.exports = function (app, express) {
+module.exports = function (app, express, db) {
 
   app.use(express.static('static'));
 

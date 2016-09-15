@@ -10,23 +10,15 @@ var simpleCache = {
 
 function getEventTimestampQuery(evtName) {
 
-  if (simpleCache[evtName]) {
-    return Promise.resolve(simpleCache[evtName]);
-  } else if (evtName) {
-
-    var qry = {
-      eventName: {
-        $eq: evtName
-      }
+  var qry = {
+    eventName: {
+      $eq: evtName
     }
-
-    return Event
-      .find(qry)
-      .limit(1).lean().exec();
   }
 
-  return Promise.resolve(null);
-  
+  return Event
+    .findOne(qry)
+
 }
 
 function queryAllFrames (user, comparator, timestamp, offset) {
@@ -50,16 +42,19 @@ function queryAllFrames (user, comparator, timestamp, offset) {
       displayName: comparator,
       timestamp: getTimestampQuery(timestamp, offset)
     }
-  ).lean().exec();
+  )
 
   var userFrames = Action.find(
     {
       displayName: user,
       timestamp: getTimestampQuery(timestamp, offset)
     }
-  ).lean().exec();
+  )
 
-  return Promise.all([userFrames, comparatorFrames]);
+  return {
+    userFrames: userFrames,
+    comparatorFrames: comparatorFrames
+  };
 
 }
 
@@ -170,56 +165,41 @@ module.exports = {
       return;
     }
 
-    getEventTimestampQuery(req.query.evt).then(function(foundEvt){
+    var evtCollection = getEventTimestampQuery(req.query.evt);
 
-      if (!simpleCache[req.query.evt]){
-        simpleCache[req.query.evt] = foundEvt;
+    if (evtCollection) req.query.timestamp = evtCollection.timestamp;
+
+    var allFrames = queryAllFrames(req.query.username, req.query.comparator, req.query.timestamp, req.query.offset);
+
+    var result = sumFrameDistances(allFrames.userFrames, allFrames.comparatorFrames);
+
+    var personALastFrame;
+    var personBLastFrame;
+
+    if (allFrames.userFrames[0] && allFrames.comparatorFrames[0]) {
+      personALastFrame = allFrames.userFrames[allFrames.userFrames.length - 1].head.position;
+      personBLastFrame = allFrames.comparatorFrames[allFrames.comparatorFrames.length - 1].head.position;
+    } else {
+
+      var nothing = {
+        x: 0,
+        y: 0,
+        z: 0
       }
 
-      if (foundEvt) {
-        req.query.timestamp = foundEvt[0].timestamp;
+      personALastFrame = nothing;
+      personBLastFrame = nothing;
+      
+    }
+
+    res.status(200).send(
+      {
+        distanceUserMoved: result.distancePersonA,
+        distanceComparatorMoved: result.distancePersonB,
+        R: result.R,
+        distanceBetweenUsers: compareUtils.threeDimensionalDistance(personALastFrame, personBLastFrame)
       }
-
-
-      return queryAllFrames(req.query.username, req.query.comparator, req.query.timestamp, req.query.offset);
-
-
-    }).then(function(resolvedValue){
-
-      var result = sumFrameDistances(resolvedValue[0], resolvedValue[1]);
-
-      // At the last offset, how close are both of you.
-      var personALastFrame;
-      var personBLastFrame;
-
-      if (resolvedValue[0][0] && resolvedValue[1][1]) {
-        personALastFrame = resolvedValue[0][resolvedValue[0].length - 1].head.position;
-        personBLastFrame = resolvedValue[1][resolvedValue[1].length - 1].head.position;
-      } else {
-
-        var nothing = {
-          x: 0,
-          y: 0,
-          z: 0
-        }
-
-        personALastFrame = nothing;
-        personBLastFrame = nothing;
-        
-      }
-
-      res.status(200).send(
-        {
-          distanceUserMoved: result.distancePersonA,
-          distanceComparatorMoved: result.distancePersonB,
-          R: result.R,
-          distanceBetweenUsers: compareUtils.threeDimensionalDistance(personALastFrame, personBLastFrame)
-        }
-      );
-
-    }).catch(function(err){
-      res.status(400).send(err);
-    });
+    );
 
   }
 

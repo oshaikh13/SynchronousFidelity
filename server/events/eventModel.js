@@ -1,11 +1,11 @@
-var mongoose = require('mongoose');
+var db = require('../config/lokiConfig.js');
 
-var EventSchema = new mongoose.Schema({
+var eventModel;
 
-  eventName: String,
-  timestamp: Number,
-  displayName: String
+module.exports = function () {
+  if (!eventModel) {
+    eventModel = db.addCollection('events');
+  }
 
-});
-
-module.exports = mongoose.model('events', EventSchema);
+  return eventModel;
+}

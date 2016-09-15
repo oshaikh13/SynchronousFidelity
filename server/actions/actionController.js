@@ -1,4 +1,4 @@
-var Action = require('./actionModel.js');
+var Action = require('./actionModel.js')();
 
 function prettyPrint(obj) {
   console.log(JSON.stringify(obj, null , 2));
@@ -12,16 +12,9 @@ module.exports = {
 
     // prettyPrint(newAction);
 
-    Action.create(newAction, function(err, doc){
+    Action.insert(newAction);
+    res.sendStatus(200);
 
-      if (err) {
-        res.status(400).send(err);
-      } else res.sendStatus(200);
-
-    })
-
-  },
-
-
+  }
 }
 
