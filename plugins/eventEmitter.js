@@ -15,15 +15,17 @@ var mapping = Controller.newMapping(MAPPING_NAME);
 
 // Add a route to the mapping object
 // Events are fired on Right Trigger presses
-mapping.from(Controller.Standard.RT).to(function (value) {
+
+mapping.from(Controller.Standard.RightGrip).to(function (value) {
+
+
+  if (value !== 1) {
+    // Button is "unpressed"
+    return;
+  }
 
   var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance 
   // you need to make a new instance for every HTTP request
-
-  if (value !== 1) {
-    // trigger isn't pressed down completely.
-    return;
-  }
   
   if (DEBUG) return;
 
@@ -35,6 +37,8 @@ mapping.from(Controller.Standard.RT).to(function (value) {
     eventName: "Event " + eventNumber,
     displayName: MyAvatar.displayName
   };
+
+  Window.alert("Fired Event #" + eventNumber)
 
   eventNumber++;
 
