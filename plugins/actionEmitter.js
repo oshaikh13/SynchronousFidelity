@@ -1,5 +1,5 @@
 
-var baseURL = "https://salty-stream-30260.herokuapp.com/"
+var baseURL = "http://default-environment.npvtjppj82.us-east-1.elasticbeanstalk.com/"
 // DEV
 // var baseURL = "http://localhost:8000/"
 
