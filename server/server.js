@@ -19,5 +19,7 @@ require('./config/middleware.js')(app, express);
 
 server.listen(process.env.PORT || 8000);
 
+console.log("LAUNCHING LOKI SERVER");
+
 module.exports = app;
 
