@@ -1,14 +1,9 @@
-var Action = require('../actions/actionModel.js');
-var Event = require('../events/eventModel.js');
+var Action = require('../actions/actionModel.js')();
+var Event = require('../events/eventModel.js')();
 var compareUtils = require('./compareUtils.js')
 
-// If I were to over-engineer this, I'd add Redis here :p
-var simpleCache = {
-
-}
-
-
 function getEventTimestampQuery(evtName) {
+  if (!evtName) return null;
 
   var qry = {
     eventName: {
@@ -28,28 +23,35 @@ function queryAllFrames (user, comparator, timestamp, offset) {
   function getTimestampQuery (timestamp, offset) {
     if (offset < 0) {
       return {
-        $gte: timestamp, 
-        $lte: timestamp - offset
+        '$gte': timestamp, 
+        '$lte': timestamp - offset
       }
     } else return {
-      $gte: timestamp - offset, 
-      $lte: timestamp      
+      '$gte': timestamp - offset, 
+      '$lte': timestamp      
     }
   }
 
-  var comparatorFrames = Action.find(
-    {
-      displayName: comparator,
-      timestamp: getTimestampQuery(timestamp, offset)
-    }
-  )
 
-  var userFrames = Action.find(
-    {
-      displayName: user,
-      timestamp: getTimestampQuery(timestamp, offset)
-    }
-  )
+  var limits = getTimestampQuery(timestamp, offset);
+
+  var comparatorFrames = Action.where(function(doc){
+    return (
+      doc.displayName === comparator && 
+      doc.timestamp <= limits['$lte'] && 
+      doc.timestamp >= limits['$gte']
+    );
+  })
+
+
+  var userFrames = Action.where(function(doc){
+    return (
+      doc.displayName === user && 
+      doc.timestamp <= limits['$lte'] && 
+      doc.timestamp >= limits['$gte']
+    );
+  })
+
 
   return {
     userFrames: userFrames,
@@ -167,7 +169,9 @@ module.exports = {
 
     var evtCollection = getEventTimestampQuery(req.query.evt);
 
-    if (evtCollection) req.query.timestamp = evtCollection.timestamp;
+    if (evtCollection) {
+      req.query.timestamp = evtCollection.timestamp;
+    }
 
     var allFrames = queryAllFrames(req.query.username, req.query.comparator, req.query.timestamp, req.query.offset);
 
