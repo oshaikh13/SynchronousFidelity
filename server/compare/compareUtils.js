@@ -1,15 +1,53 @@
 module.exports = {
 
-  /*
-  * Shamefully ripped off from Steve Gardner 
-  * Thank you!
-  */
+  chunkify: function(a, n, balanced) {
+
+    if (n < 2)
+      return [a];
+
+    var len = a.length,
+      out = [],
+      i = 0,
+      size;
+
+    if (len % n === 0) {
+      size = Math.floor(len / n);
+      while (i < len) {
+        out.push(a.slice(i, i += size));
+      }
+    } else if (balanced) {
+      while (i < len) {
+        size = Math.ceil((len - i) / n--);
+        out.push(a.slice(i, i += size));
+      }
+    } else {
+
+      n--;
+      size = Math.floor(len / n);
+      if (len % size === 0)
+        size--;
+      while (i < size * n) {
+        out.push(a.slice(i, i += size));
+      }
+      out.push(a.slice(size * n));
+
+    }
+
+    return out;
+  },
+
 
   threeDimensionalDistance: function (o1, o2) {
     return Math.sqrt((o2.x-o1.x)*(o2.x-o1.x)+(o2.y-o1.y)*(o2.y-o1.y)+(o2.z-o1.z)*(o2.z-o1.z));
   },
 
+  /*
+  * Shamefully ripped off R correlator from Steve Gardner 
+  * Thank you!
+  */
+
   getPearsonCorrelation: function (x, y) {
+    
     var shortestArrayLength = 0;
      
     if(x.length == y.length) {
