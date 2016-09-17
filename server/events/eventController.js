@@ -13,7 +13,7 @@ module.exports = {
     Event.create(newEvent, function(err, doc){
       if (err) {
         res.status(400).send(err);
-      } else res.sendStatus(200);
+      } else res.send(doc);
 
     })
 

@@ -1,155 +1,47 @@
-
+<!DOCTYPE html>
 <html>
+  <!-- I hate CSS -->
   <head>
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/css/bootstrap.min.css" integrity="sha384-2hfp1SzUoho7/TsGGGDaFdsuuDL0LX2hnUp6VkX3CUQ2K4K+xjboZdsXyp4oUHZj" crossorigin="anonymous">
   </head>
+
   <body>
-    <h3>R Correlation</h3>
-    <div id="r-correlation"></div>
-    <h3>User distance</h3>
-    <div id="userdist"></div>
-    <h3>Comparator distance</h3>
-    <div id="comparatordist"></div>
-    <h3>Distance between Users</h3>
-    <div id="between-users"></div>
+    <form style="padding: 20px" class="form-inline">
+      <div class="form-group">
+        <label for="name1">User</label>
+        <input type="text" class="form-control" id="name1">
+      </div>
+      <div class="form-group">
+        <label for="name2">Comparator</label>
+        <input type="text" class="form-control" id="name2">
+      </div>
+      <button type="submit" class="btn btn-primary">Load Graph</button>
+    </form>
 
-    <script src="https://npmcdn.com/axios/dist/axios.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.js"></script>
-    <script src="https://cdn.rawgit.com/khalidsalomao/simple-query-string/1.3.0/src/simplequerystring.min.js"></script>
-
-    <script>
-
-
-    var params = simpleQueryString.parse(location.hash);   
-    var username = params.username || "notcreepyeyes";
-    var comparator = params.comparator || "Omar"; 
-
-    console.log(username, comparator);
-
-    var MAX_X_AXIS_VALUES_DISPLAYED = 30;
-
-    var rCorrelation = ['R Correlation'];
-    var userDist = ['User Distance'];
-    var comparatorDist = ['Comparator Distance'];
-    var distanceBetween = ['Distance Between Users'];
-
-    var distYAxes = {
-      min: 0,
-      max: 15
-    }
-
-    var correlationYAxes = {
-      min: -1,
-      max: 1
-    }
-
-    var distanceBetweenUsersGraph = c3.generate({
-      bindto: "#between-users",
-      data: {
-        columns: [
-          distanceBetween
-        ],
-        type: 'spline'
-      },
-
-      axis: {
-        y: distYAxes
-      }
-    });
-
-    var rCorrelationGraph = c3.generate({
-      bindto: "#r-correlation",
-      data: {
-        columns: [
-          rCorrelation
-        ],
-        type: 'spline'
-      },
-
-      axis: {
-        y: correlationYAxes
-      }
-    });
-
-    var userDistGraph = c3.generate({
-      bindto: "#userdist",
-      data: {
-        columns: [
-          userDist
-        ],
-        type: 'spline'
-      },
-
-      axis: {
-        y: distYAxes
-      }
-    });
-
-    var comparatorDistGraph = c3.generate({
-      bindto: "#comparatordist",
-      data: {
-        columns: [
-          userDist
-        ],
-        type: 'spline'
-      },
-
-      axis: {
-        y: distYAxes
-      }
-    });
-
-    var fetchDataInterval = setInterval(function() { 
-      axios.get('/api/compare/correlation', {
-        params: {
-          username: username,
-          comparator: comparator,
-          offset: 5000
-        }
-      }).then(function(response){
-
-        function updateGraph (graph, data) {
-          graph.load({
-            columns: [
-              data
-            ]
-          });
-        }
-
-        function arrayLimter (arr, value, index, numElements, limit) {
-          if (value !== null && value !== undefined) {
-            if (arr.length > limit) {
-              arr.splice(index, numElements);
-            }
-          } else return false;
-
-          arr.push(value);
-          return true;
-
-        }
-
-        if (arrayLimter(rCorrelation, response.data.R, 1, 1, 30)) {
-          updateGraph(rCorrelationGraph, rCorrelation);
-        }
-
-        if (arrayLimter(userDist, response.data.distanceUserMoved, 1, 1, 30)) {
-          updateGraph(userDistGraph, userDist);
-        }
-
-        if (arrayLimter(comparatorDist, response.data.distanceComparatorMoved, 1, 1, 30)) {
-          updateGraph(comparatorDistGraph, comparatorDist);
-        }
-
-        if (arrayLimter(distanceBetween, response.data.distanceBetweenUsers, 1, 1, 30)) {
-          updateGraph(distanceBetweenUsersGraph, distanceBetween);
-        }
-
-
-      });
-    }, 250)
-    
-
-    </script>
+    <div>
+      <a style="margin-left: 20px" class="btn btn-primary" href="eventEmitter.html">Go to Event Emitter</a>
+    </div>
   </body>
+
+  <script type="text/javascript">
+
+    var element = document.querySelector("form");
+
+    element.addEventListener("submit", function(event) {
+
+      event.preventDefault();
+
+      var user1 = document.getElementById('name1').value;
+      var user2 = document.getElementById('name2').value;
+
+      if (!user1 || !user2) {
+        alert("Pleae enter both the user and comparator");
+        return;
+      }
+
+      window.location.href = "graphs.html#username=" + user1 + "&comparator=" + user2;
+      
+    });
+    
+  </script>
 </html>

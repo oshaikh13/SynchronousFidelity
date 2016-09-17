@@ -26,6 +26,4 @@ module.exports = function (app, express) {
   require('../compare/compareRoutes.js')(compareRouter);
 
 
-
-
 };

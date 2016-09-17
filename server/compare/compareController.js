@@ -2,6 +2,8 @@ var Action = require('../actions/actionModel.js');
 var Event = require('../events/eventModel.js');
 var compareUtils = require('./compareUtils.js')
 
+var json2csv = require('json2csv');
+
 // If I were to over-engineer this, I'd add Redis here :p
 var simpleCache = {
 
@@ -141,6 +143,17 @@ module.exports = {
       res.status(400).send(err);
     })
   },
+
+
+  rawdata: function(req, res, next) {
+
+    if (req.query.evt && req.query.evt2) {
+
+    } else if (req.query.t1 && req.query.t2) {
+
+    } else res.status(400).send("Bad request.")
+
+  }, 
 
   rCorrelation: function(req, res, next) {
 

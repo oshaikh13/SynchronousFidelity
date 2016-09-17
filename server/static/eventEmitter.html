@@ -1,0 +1,76 @@
+
+<html>
+  <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/css/bootstrap.min.css" integrity="sha384-2hfp1SzUoho7/TsGGGDaFdsuuDL0LX2hnUp6VkX3CUQ2K4K+xjboZdsXyp4oUHZj" crossorigin="anonymous">
+  </head>
+  <body>
+
+
+
+    <form style="padding-left: 20px" class="form-inline">
+
+
+      <div class="form-group">
+        <label for="name1">Event Name</label>
+        <input type="text" class="form-control" id="name1" placeholder="optional">
+      </div>
+
+      <button id="emitbtn" style="margin: 20px" class="btn btn-primary" onclick="emitEvent()">Emit Event</button>
+
+    </form>
+
+    <table id="eventTable" style="margin: 20px" class="table">
+      <thead>
+        <tr>
+          <th>Event Name</th>
+          <th>Event Emitter</th>
+          <th>Timestamp</th>
+        </tr>
+      </thead>
+      <tbody>
+
+      </tbody>
+    </table>
+
+    <script src="https://npmcdn.com/axios/dist/axios.min.js"></script>
+
+    <script>
+      var evtNum = 0;
+      function emitEvent() {
+
+        document.getElementById("emitbtn").disabled = true;
+        document.getElementById("emitbtn").textContent = "Emitting";
+
+        var evtName = document.getElementById('name1').value;;
+
+        if (!evtName) {
+          evtName = "Event " + evtNum;
+        }
+
+        axios.post('/api/event/create', {
+          eventName: evtName,
+          displayName: "Spectator"
+        }).then(function(response){
+
+          console.log(response);
+          document.getElementById("emitbtn").disabled = false;
+          document.getElementById("emitbtn").textContent = "Emit Event";
+          var table = document.getElementById("eventTable");
+
+          var row = table.insertRow(1);
+          var cell1 = row.insertCell(0);
+          var cell2 = row.insertCell(0);
+          var cell3 = row.insertCell(0);
+
+          cell3.innerHTML = response.data.eventName;
+          cell2.innerHTML = response.data.displayName;
+          cell1.innerHTML = response.data.timestamp;
+
+        });
+
+      }
+
+    </script>
+
+  </body>
+</html>
