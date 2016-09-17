@@ -1,0 +1,13 @@
+db:  
+  image: mongo
+  ports:
+    - "27017:27017"
+synchronousfidelity:  
+  build: .
+  links:
+    - db
+  environment:
+    - PORT=8000
+    - MONGODB_URI=mongodb://db:27017/synchrony
+  ports:
+    - "8000:8000"
