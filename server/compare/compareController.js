@@ -276,7 +276,7 @@ module.exports = {
       var personALastFrame;
       var personBLastFrame;
 
-      if (resolvedValue[0][0] && resolvedValue[1][0]) {
+      if (resolvedValue[0] && resolvedValue[1] && resolvedValue[0][0] && resolvedValue[1][0]) {
         personALastFrame = resolvedValue[0][resolvedValue[0].length - 1].head.position;
         personBLastFrame = resolvedValue[1][resolvedValue[1].length - 1].head.position;
       } else {
