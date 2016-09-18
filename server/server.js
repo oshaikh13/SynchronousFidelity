@@ -1,4 +1,5 @@
 // TODO: ES6-ify
+require('dotenv').load();
 
 var express     = require('express'),
     mongoose    = require('mongoose');

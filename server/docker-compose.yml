@@ -6,8 +6,8 @@ synchronousfidelity:
   build: .
   links:
     - db
+  ports:
+    - "8000:8000"
   environment:
     - PORT=8000
     - MONGODB_URI=mongodb://db:27017/synchrony
-  ports:
-    - "8000:8000"

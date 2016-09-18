@@ -5,20 +5,85 @@ High Fidelity Script for tracking head/hands
 
 This is a High Fidelity related project that allows users to track their movements and store them in a NoSQL database (MongoDB)
 
-It also has a really sick API that lets you query for Pearson's R correlation between the distance two users have moved in a time interval
+It also has a really neat API that lets you query for Pearson's R correlation between the distance two users have moved in a time interval
 
-## Server Setup
+## Local Server Setup
 
-*NOTE: This is for setting up a local server, and is not REQUIRED*
+Setting up a local server can be benefical if you are looking to lower latency in the reqeusts sent. This often makes the live graph **much** more responsive, as it drops the server ping considerably.
 
-Edit the .env files with your database URI in both server/ and jsoncsv/
+There are two ways of setting up the local server. Docker is recommended because it is independent of the server's environment, and should work without any extra hassles (e.g installing and setting up a database and node.js). 
 
-Change the global server URL variables if you are hosting a local server. 
+Read more about docker [here](https://www.docker.com/what-docker).
+
+### Method 1: Using Docker (recommended)
+
+Ensure you have [docker](https://www.docker.com/products/docker) installed for your respective operating system.
+
+Then, clone the repository. If you wish to run the server and database on different ports (not 8000 and 27017, respectively), you can edit docker-compose.yml and Dockerfile in the server folder for port mapping.
 
 ```
-$ cd server
+# docker-compose.yml
+db:  
+  image: mongo
+  ports:
+    - "27017:27017" # Change this to the port you want the database to run on.
+synchronousfidelity:  
+  build: .
+  links:
+    - db
+  ports:
+    - "8000:8000" # Change this to the port you want the server to run on.
+  environment:
+    - PORT=8000 # Enusre you change '8000' to reflect the new server port.
+    - MONGODB_URI=mongodb://db:27017/synchrony # Ensure you change '27017' after to reflect the new database port
+
+```
+
+```
+# Dockerfile
+
+FROM nodesource/jessie:4.4.6
+ADD package.json package.json  
+RUN npm install  
+ADD . .  
+
+EXPOSE 8000 # Change this to reflect the server port in docker-compose.yml
+EXPOSE 27017 # Change this to reflect the database port in docker-compose.yml
+
+CMD ["npm","start"]  
+
+```
+
+Then, simply run the following commands in the server folder
+
+```
+$ docker-compose build
+$ docker-compose up
+```
+
+And the server should start!
+
+### Method 2: Setting up MongoDB and Node.js manually.
+
+You need to start by downloading and installing both MongoDB and Node.js on your system, for your respective operating system. 
+
+Next, configure and start a mongod instance. (Instructions can be found online)
+
+Then, clone the repository. Go to the server directory, and create a .env file that looks something like this
+
+```
+ PORT=PORT_NUMBER_FOR_SERVER
+ MONGODB_URI=MONGOD_URL # Should look something like mongo://localhost:27017/db 
+```
+
+Then run the following in the server directory
+
+```
 $ npm install
+$ npm start
 ```
+
+and the server should start!
 
 ## Plugin Description
 

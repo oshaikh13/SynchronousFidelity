@@ -4,5 +4,6 @@ RUN npm install
 ADD . .  
 
 EXPOSE 8000
+EXPOSE 27017
 
 CMD ["npm","start"]  
