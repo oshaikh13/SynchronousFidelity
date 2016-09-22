@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "heroku": "cd .. && git subtree push --prefix server heroku master",
-    "start": "nodejs server.js"
+    "start": "node server.js"
   },
   "author": "Omar Shaikh <oshaikh13@gmail.com> (http://www.oshaikh.com)",
   "license": "ISC",
