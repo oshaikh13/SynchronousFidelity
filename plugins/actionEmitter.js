@@ -1,7 +1,8 @@
 
-// var baseURL = "https://salty-stream-30260.herokuapp.com/"
+var baseURL = "http://162.243.4.55/"
+
 // DEV
-var baseURL = "http://localhost:8000/"
+// var baseURL = "http://localhost:8000/"
 
 var frame = 0;
 
