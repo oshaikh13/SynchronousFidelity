@@ -80,6 +80,8 @@ function prettyPrint(obj) {
 
 function sumFrameDistances (personA, personB) {
 
+  console.log(personA.length, personB.length);
+
   // TODO: Add this obj to the frame so we can align it later.
   function interval (start, end) {
     var obj = {};
@@ -232,11 +234,11 @@ module.exports = {
 
 
     if (!req.query.timestamp) {
-      req.query.timestamp = Date.now();
+      req.query.timestamp = Date.now() - 300; // A small 'space' so the server can 'catch up'
     }
 
     if (!req.query.offset) {
-      req.query.offset = 500; //ms
+      req.query.offset = 5000; //ms
     } else {
       // + in front of an string casts it into an int. yay
       req.query.offset = +req.query.offset;
