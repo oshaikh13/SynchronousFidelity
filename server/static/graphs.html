@@ -10,8 +10,6 @@
     <div id="userdist"></div>
     <h3>Comparator distance</h3>
     <div id="comparatordist"></div>
-    <h3>Distance between Users</h3>
-    <div id="between-users"></div>
 
     <script src="https://npmcdn.com/axios/dist/axios.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
@@ -32,7 +30,6 @@
     var rCorrelation = ['R Correlation'];
     var userDist = ['User Distance'];
     var comparatorDist = ['Comparator Distance'];
-    var distanceBetween = ['Distance Between Users'];
 
     var distYAxes = {
       min: 0,
@@ -43,20 +40,6 @@
       min: -1,
       max: 1
     }
-
-    var distanceBetweenUsersGraph = c3.generate({
-      bindto: "#between-users",
-      data: {
-        columns: [
-          distanceBetween
-        ],
-        type: 'spline'
-      },
-
-      axis: {
-        y: distYAxes
-      }
-    });
 
     var rCorrelationGraph = c3.generate({
       bindto: "#r-correlation",
@@ -101,11 +84,11 @@
     });
 
     var fetchDataInterval = setInterval(function() { 
-      axios.get('/api/compare/correlation', {
+      axios.get('/api/compare/rawdata', {
         params: {
           username: username,
           comparator: comparator,
-          offset: 5000
+          chunks: 1
         }
       }).then(function(response){
 
@@ -129,25 +112,21 @@
 
         }
 
-        if (arrayLimter(rCorrelation, response.data.R, 1, 1, 30)) {
+        if (arrayLimter(rCorrelation, response.data.data[0].R, 1, 1, 30)) {
           updateGraph(rCorrelationGraph, rCorrelation);
         }
 
-        if (arrayLimter(userDist, response.data.distanceUserMoved, 1, 1, 30)) {
+        if (arrayLimter(userDist, response.data.data[0].distancePersonA, 1, 1, 30)) {
           updateGraph(userDistGraph, userDist);
         }
 
-        if (arrayLimter(comparatorDist, response.data.distanceComparatorMoved, 1, 1, 30)) {
+        if (arrayLimter(comparatorDist, response.data.data[0].distancePersonB, 1, 1, 30)) {
           updateGraph(comparatorDistGraph, comparatorDist);
-        }
-
-        if (arrayLimter(distanceBetween, response.data.distanceBetweenUsers, 1, 1, 30)) {
-          updateGraph(distanceBetweenUsersGraph, distanceBetween);
         }
 
 
       });
-    }, 250)
+    }, 300)
     
 
     </script>

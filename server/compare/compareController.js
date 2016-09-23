@@ -80,8 +80,6 @@ function prettyPrint(obj) {
 
 function sumFrameDistances (personA, personB) {
 
-  console.log(personA.length, personB.length);
-
   // TODO: Add this obj to the frame so we can align it later.
   function interval (start, end) {
     var obj = {};
@@ -200,12 +198,28 @@ module.exports = {
 
     var chunks = +req.query.chunks;
 
+    if (!req.query.evt1 && !req.query.evt2 && !req.query.t1 && !req.query.t2) {
+      req.query.t2 = Date.now();
+      req.query.t1 = req.query.offset ? (req.query.t2 - (+req.query.offset)) : (req.query.t2 - 5000);
+    }
+
     if (req.query.evt1 && req.query.evt2) {
 
       Promise.all([getEventTimestampQuery(req.query.evt1), getEventTimestampQuery(req.query.evt2)])
       .then(function (resolvedValues){
 
+
+
         if (resolvedValues[0] && resolvedValues[1] && resolvedValues[0][0] && resolvedValues[1][0]) {
+
+          if (!simpleCache[resolvedValues[0][0].eventName]){
+            simpleCache[resolvedValues[0][0].eventName] = resolvedValues[0][0];
+          }
+
+          if (!simpleCache[resolvedValues[1][0].eventName]){
+            simpleCache[resolvedValues[1][0].eventName] = resolvedValues[1][0];
+          }
+
           var t1 = resolvedValues[0][0].timestamp;
           var t2 = resolvedValues[1][0].timestamp;
  
@@ -226,88 +240,9 @@ module.exports = {
 
     } else res.status(400).send("Bad request.")
 
-  }, 
-
-  rCorrelation: function(req, res, next) {
-
-    // Only runs when EVT is passed.
-
-
-    if (!req.query.timestamp) {
-      req.query.timestamp = Date.now() - 300; // A small 'space' so the server can 'catch up'
-    }
-
-    if (!req.query.offset) {
-      req.query.offset = 5000; //ms
-    } else {
-      // + in front of an string casts it into an int. yay
-      req.query.offset = +req.query.offset;
-    }
-
-
-
-    if (isNaN(req.query.offset)) {
-      res.status(400).send("Illegal params");
-      return;
-    }
-
-    if (!req.query.timestamp || !req.query.offset || !req.query.username || !req.query.comparator) {
-      res.status(400).send("Illegal params");
-      return;
-    }
-
-    getEventTimestampQuery(req.query.evt).then(function(foundEvt){
-
-      if (!simpleCache[req.query.evt]){
-        simpleCache[req.query.evt] = foundEvt;
-      }
-
-      if (foundEvt && foundEvt[0]) {
-        req.query.timestamp = foundEvt[0].timestamp;
-      }
-
-
-      return queryAllFrames(req.query.username, req.query.comparator, req.query.timestamp, req.query.offset);
-
-
-    }).then(function(resolvedValue){
-
-      var result = sumFrameDistances(resolvedValue[0], resolvedValue[1]);
-
-      // At the last offset, how close are both of you.
-      var personALastFrame;
-      var personBLastFrame;
-
-      if (resolvedValue[0] && resolvedValue[1] && resolvedValue[0][0] && resolvedValue[1][0]) {
-        personALastFrame = resolvedValue[0][resolvedValue[0].length - 1].head.position;
-        personBLastFrame = resolvedValue[1][resolvedValue[1].length - 1].head.position;
-      } else {
-
-        var nothing = {
-          x: 0,
-          y: 0,
-          z: 0
-        }
-
-        personALastFrame = nothing;
-        personBLastFrame = nothing;
-        
-      }
-
-      res.status(200).send(
-        {
-          distanceUserMoved: result.distancePersonA,
-          distanceComparatorMoved: result.distancePersonB,
-          R: result.R,
-          distanceBetweenUsers: compareUtils.threeDimensionalDistance(personALastFrame, personBLastFrame)
-        }
-      );
-
-    }).catch(function(err){
-      res.status(400).send(err);
-    });
-
   }
 
 }
+
+
 
