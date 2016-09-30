@@ -196,6 +196,8 @@ module.exports = {
   // TODO: clean this up plz :(
   rawdata: function(req, res, next) {
 
+    console.log("GETTING DATA REQUEST");
+
     var chunks = +req.query.chunks;
 
     if (!req.query.evt1 && !req.query.evt2 && !req.query.t1 && !req.query.t2) {

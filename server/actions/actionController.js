@@ -7,6 +7,8 @@ function prettyPrint(obj) {
 module.exports = {
   createAction: function(req, res, next) {
 
+    console.log("GETTING ACTION CREATE REQUEST");
+
     var newAction = req.body;
     newAction.timestamp = Date.now();
 
