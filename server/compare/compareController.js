@@ -196,7 +196,9 @@ module.exports = {
   // TODO: clean this up plz :(
   rawdata: function(req, res, next) {
 
-    console.log("GETTING DATA REQUEST");
+    if (process.env.LOGS) {
+      console.log("GETTING DATA REQUEST");
+    }
 
     var chunks = +req.query.chunks;
 
