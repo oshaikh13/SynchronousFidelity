@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Highcharts Example</title>
+    
+    
+    <!-- 1. Add these JavaScript inclusions in the head of your page -->
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.1.js"></script>
+    <script type="text/javascript" src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="https://npmcdn.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.rawgit.com/khalidsalomao/simple-query-string/1.3.0/src/simplequerystring.min.js"></script>
+    
+    <!-- 2. Add the JavaScript to initialize the chart on document ready -->
+    <script>
+
+    var chart;
+    var chartA;
+    var chartB;
+
+    var fetchDataInterval = function() { 
+
+      if (!chart || !chartA || !chartB) {
+        setTimeout(fetchDataInterval, 600)
+        return;
+      }
+
+      var params = simpleQueryString.parse(location.hash);   
+      var username = params.username || "cornellvel";
+      var comparator = params.comparator || "Omar"; 
+
+      console.log(username, comparator);
+
+      axios.get('/api/compare/rawdata', {
+        params: {
+          username: username,
+          comparator: comparator,
+          chunks: 1
+        }
+      }).then(function(response){
+
+        var distancePersonA = response.data.data[0].distancePersonA;
+        var distancePersonB = response.data.data[0].distancePersonB;
+        var R = response.data.data[0].R;
+        var completionTime = response.data.completionTime;
+
+        var series = chart.series[0],
+            shift = series.data.length > 30; // shift if the series is longer than 20
+    
+        var seriesA = chartA.series[0],
+            shiftA = seriesA.data.length > 30; // shift if the series is longer than 20
+
+        var seriesB = chartB.series[0],
+            shiftB = seriesB.data.length > 30; // shift if the series is longer than 20
+
+        chart.series[0].addPoint([completionTime, R], true, shift);
+        chartA.series[0].addPoint([completionTime, distancePersonA], true, shift);
+        chartB.series[0].addPoint([completionTime, distancePersonB], true, shift);
+
+        setTimeout(fetchDataInterval, 600)
+
+      });
+
+    };
+      
+    $(document).ready(function() {
+
+      chart = new Highcharts.Chart({
+        chart: {
+          renderTo: 'container',
+          defaultSeriesType: 'spline',
+          events: {
+            load: fetchDataInterval
+          }
+        },
+        title: {
+          text: 'Live R Correlation Data'
+        },
+        xAxis: {
+          type: 'datetime',
+          tickPixelInterval: 150,
+          maxZoom: 20 * 1000
+        },
+        yAxis: {
+          min: 0,
+          max: 1,
+          minPadding: 0.1,
+          maxPadding: 0.1,
+          title: {
+            text: 'Value',
+            margin: 80
+          }
+        },
+        series: [{
+          name: 'R Data',
+          data: []
+        }]
+      }); 
+
+      chartA = new Highcharts.Chart({
+        chart: {
+          renderTo: 'containerA',
+          defaultSeriesType: 'spline'
+        },
+        title: {
+          text: 'Live Distance User Data'
+        },
+        xAxis: {
+          type: 'datetime',
+          tickPixelInterval: 150,
+          maxZoom: 20 * 1000
+        },
+        yAxis: {
+          min: 0,
+          max: 9,
+          minPadding: 0.1,
+          maxPadding: 0.1,
+          title: {
+            text: 'Value',
+            margin: 80
+          }
+        },
+        series: [{
+          name: 'Distance User Data',
+          data: []
+        }]
+      }); 
+
+      chartB = new Highcharts.Chart({
+        chart: {
+          renderTo: 'containerB',
+          defaultSeriesType: 'spline'
+        },
+        title: {
+          text: 'Live Distance Comparator Data'
+        },
+        xAxis: {
+          type: 'datetime',
+          tickPixelInterval: 150,
+          maxZoom: 20 * 1000
+        },
+        yAxis: {
+          min: 0,
+          max: 9,
+          minPadding: 0.1,
+          maxPadding: 0.1,
+          title: {
+            text: 'Value',
+            margin: 80
+          }
+        },
+        series: [{
+          name: 'Distance Comparator Data',
+          data: []
+        }]
+      }); 
+
+    });
+
+    </script>
+    
+  </head>
+  <body>
+    
+    <!-- 3. Add the container -->
+    <div id="container" style="width: 800px; height: 400px; margin: 0 auto"></div>
+    <div id="containerA" style="width: 800px; height: 400px; margin: 0 auto"></div>
+    <div id="containerB" style="width: 800px; height: 400px; margin: 0 auto"></div>
+
+    
+  </body>
+</html>

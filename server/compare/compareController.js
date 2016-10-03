@@ -178,8 +178,10 @@ function rawDataHandler (username, comparator, t1, t2, chunks, cb) {
 
     results.totalTime = t2 - t1;
     results.chunkTime = results.totalTime/chunks;
-
+    results.completionTime = Date.now();
+    
     cb(results);
+
   });
 }
 
