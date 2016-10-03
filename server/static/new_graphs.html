@@ -18,18 +18,18 @@
     var chartA;
     var chartB;
 
+    var params = simpleQueryString.parse(location.hash);   
+    var username = params.username || "cornellvel";
+    var comparator = params.comparator || "Omar"; 
+
+    console.log(username, comparator);
+
     var fetchDataInterval = function() { 
 
       if (!chart || !chartA || !chartB) {
         setTimeout(fetchDataInterval, 600)
         return;
       }
-
-      var params = simpleQueryString.parse(location.hash);   
-      var username = params.username || "cornellvel";
-      var comparator = params.comparator || "Omar"; 
-
-      console.log(username, comparator);
 
       axios.get('/api/compare/rawdata', {
         params: {
