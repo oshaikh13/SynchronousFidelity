@@ -20,27 +20,21 @@ module.exports = function (app, express) {
   app.use('/api/event', eventRouter);
   app.use('/api/compare', compareRouter);
 
-  app.get('/plugins/actionEmitter', function(req, res, next) {
+  app.get('/plugins/actionEmitter/:serverip', function(req, res, next) {
 
-    if (!req.query.serverip) {
-      res.status(400).send("No query IP found!");
-      return;
-    }
+    var address = 'http://' + req.params.serverip + ':' + process.env.PORT + '/';
 
-    var jsFile = plugins.getActionEmitterText(req.query.serverip);
+    var jsFile = plugins.getActionEmitterText(address);
     res.set('Content-Type', 'application/javascript;charset=utf-8');
     res.send(jsFile);
 
   });
 
-  app.get('/plugins/eventEmitter', function(req, res, next) {
+  app.get('/plugins/eventEmitter/:serverip', function(req, res, next) {
 
-    if (!req.query.serverip) {
-      res.status(400).send("No query IP found!");
-      return;
-    }
+    var address = 'http://' + req.params.serverip + ':' + process.env.PORT + '/';
 
-    var jsFile = plugins.getEventEmitterText(req.query.serverip);
+    var jsFile = plugins.getEventEmitterText(address);
     res.set('Content-Type', 'application/javascript;charset=utf-8');
     res.send(jsFile);
 
