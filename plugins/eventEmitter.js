@@ -1,7 +1,5 @@
 
-var baseURL = "http://132.236.225.12:8000/"
-// DEV 
-// var baseURL = "http://localhost:8000/"
+var baseURL = "http://localhost:8000/"
 
 // The name of the new mapping
 var MAPPING_NAME = "com.synchronousfidelity.events.controller";

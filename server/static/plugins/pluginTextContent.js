@@ -10,6 +10,6 @@ module.exports = {
   getEventEmitterText: function (serverIpAddress) {
 
     var scriptContent = `var baseURL="` + serverIpAddress + `",MAPPING_NAME="com.synchronousfidelity.events.controller",eventNumber=1,DEBUG=!1,mapping=Controller.newMapping(MAPPING_NAME);mapping.from(Controller.Standard.RightGrip).to(function(e){if(1===e){var n=new XMLHttpRequest;if(!DEBUG){n.onreadystatechange=function(){print("Saved to server with response code: "+n.status)};var t={eventName:"Event "+eventNumber,displayName:MyAvatar.displayName};Window.alert("Fired Event #"+eventNumber),eventNumber++,n.open("POST",baseURL+"api/event/create"),n.setRequestHeader("Content-Type","application/json;charset=UTF-8"),n.send(JSON.stringify(t)),print("FIRED EVENT "+eventNumber)}}}),Controller.enableMapping(MAPPING_NAME),Script.scriptEnding.connect(function(){Controller.disableMapping(MAPPING_NAME)});`
-    return serverIpAddress;
+    return scriptContent;
   }
 }
