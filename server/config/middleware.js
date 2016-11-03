@@ -3,6 +3,20 @@ var morgan      = require('morgan'), // used for logging incoming request
     plugins     = require('../static/plugins/pluginTextContent.js')
 
 
+var publicIp = require('public-ip');
+var internalIp = require('internal-ip');
+
+var currentURL;
+
+// publicIp.v4().then(ip => {
+//   currentURL = "http://" + ip + ":" + process.env.PORT + "/";
+//   console.log("SETTING UP ON: " + currentURL);
+// });
+
+var ip = internalIp.v4()
+currentURL = "http://" + ip + ":" + process.env.PORT + "/";
+console.log("SETTING UP ON: " + currentURL);
+
 module.exports = function (app, express) {
 
   app.use(express.static('static/web'));
@@ -23,8 +37,7 @@ module.exports = function (app, express) {
   app.get('/plugins/actionEmitter', function(req, res, next) {
 
     if (!req.query.serverip) {
-      res.status(400).send("No query IP found!");
-      return;
+      req.query.serverip = currentURL;
     }
 
     var jsFile = plugins.getActionEmitterText(req.query.serverip);
@@ -36,8 +49,7 @@ module.exports = function (app, express) {
   app.get('/plugins/eventEmitter', function(req, res, next) {
 
     if (!req.query.serverip) {
-      res.status(400).send("No query IP found!");
-      return;
+      req.query.serverip = currentURL;
     }
 
     var jsFile = plugins.getEventEmitterText(req.query.serverip);

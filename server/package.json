@@ -15,9 +15,11 @@
     "cors": "^2.7.1",
     "dotenv": "^2.0.0",
     "express": "^4.14.0",
+    "internal-ip": "^1.2.0",
     "json2csv": "^3.6.3",
     "mongoose": "^4.5.5",
     "morgan": "^1.7.0",
-    "nodemon": "^1.10.2"
+    "nodemon": "^1.10.2",
+    "public-ip": "^2.0.1"
   }
 }
