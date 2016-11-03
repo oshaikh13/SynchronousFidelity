@@ -214,8 +214,6 @@ module.exports = {
       Promise.all([getEventTimestampQuery(req.query.evt1), getEventTimestampQuery(req.query.evt2)])
       .then(function (resolvedValues){
 
-
-
         if (resolvedValues[0] && resolvedValues[1] && resolvedValues[0][0] && resolvedValues[1][0]) {
 
           if (!simpleCache[resolvedValues[0][0].eventName]){
