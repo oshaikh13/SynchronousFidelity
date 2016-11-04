@@ -31,41 +31,41 @@ function getEventTimestampQuery(evtName) {
   
 }
 
-function queryAllFrames (user, comparator, timestamp, offset, isOffsetTimestamp) {
+// Meant to handle a negative offset.
+// We can't query biggerNum < x < smallerNum
+function getTimestampQuery (timestamp, offset, isOffsetTimestamp) {
 
-  // Meant to handle a negative offset.
-  // We can't query biggerNum < x < smallerNum
-  function getTimestampQuery (timestamp, offset) {
-
-    if (isOffsetTimestamp) {
-      return {
-        $gte: timestamp, 
-        $lte: offset
-      }
-    }
-
-    if (offset < 0) {
-      return {
-        $gte: timestamp, 
-        $lte: timestamp - offset
-      }
-    } else return {
-      $gte: timestamp - offset, 
-      $lte: timestamp      
+  if (isOffsetTimestamp) {
+    return {
+      $gte: timestamp, 
+      $lte: offset
     }
   }
+
+  if (offset < 0) {
+    return {
+      $gte: timestamp, 
+      $lte: timestamp - offset
+    }
+  } else return {
+    $gte: timestamp - offset, 
+    $lte: timestamp      
+  }
+}
+
+function queryAllFrames (user, comparator, timestamp, offset, isOffsetTimestamp) {
 
   var comparatorFrames = Action.find(
     {
       displayName: comparator,
-      timestamp: getTimestampQuery(timestamp, offset)
+      timestamp: getTimestampQuery(timestamp, offset, isOffsetTimestamp)
     }
   ).lean().exec();
 
   var userFrames = Action.find(
     {
       displayName: user,
-      timestamp: getTimestampQuery(timestamp, offset)
+      timestamp: getTimestampQuery(timestamp, offset, isOffsetTimestamp)
     }
   ).lean().exec();
 
@@ -185,6 +185,78 @@ function rawDataHandler (username, comparator, t1, t2, chunks, cb) {
   });
 }
 
+function csvDataHandler(username, comparator, t1, t2, chunks, cb) {
+
+  if (t1 > t2) {
+    cb("timestamp/event 2 should come later than timestamp/event 1");
+    return;
+  }
+    
+  Action.find({
+    timestamp: getTimestampQuery(t1, t2, true)
+  }).lean().exec(function (err, actions) {
+
+    if (err) {
+      cb("Error querying database");
+      return;
+    };
+
+    json2csv({ data: actions, fields: compareUtils.actionFields() }, function(err, csv){
+      cb(csv);
+    });
+
+  });
+
+}
+
+function generalDataQuery(req, res, next, handler) {
+  if (process.env.LOGS) {
+    console.log("GETTING DATA REQUEST");
+  }
+
+  var chunks = +req.query.chunks;
+
+  if (!req.query.evt1 && !req.query.evt2 && !req.query.t1 && !req.query.t2) {
+    req.query.t2 = Date.now();
+    req.query.t1 = req.query.offset ? (req.query.t2 - (+req.query.offset)) : (req.query.t2 - 8000);
+  }
+
+  if (req.query.evt1 && req.query.evt2) {
+
+    Promise.all([getEventTimestampQuery(req.query.evt1), getEventTimestampQuery(req.query.evt2)])
+    .then(function (resolvedValues){
+
+      if (resolvedValues[0] && resolvedValues[1] && resolvedValues[0][0] && resolvedValues[1][0]) {
+
+        if (!simpleCache[resolvedValues[0][0].eventName]){
+          simpleCache[resolvedValues[0][0].eventName] = resolvedValues[0][0];
+        }
+
+        if (!simpleCache[resolvedValues[1][0].eventName]){
+          simpleCache[resolvedValues[1][0].eventName] = resolvedValues[1][0];
+        }
+
+        var t1 = resolvedValues[0][0].timestamp;
+        var t2 = resolvedValues[1][0].timestamp;
+
+        handler(req.query.username, req.query.comparator, t1, t2, chunks, function(data){
+          res.send(data);
+        });
+
+      } else res.send("Can't find a provided event");
+    })
+
+  } else if (req.query.t1 && req.query.t2) {
+    var t2 = +req.query.t2;
+    var t1 = +req.query.t1;
+
+    handler(req.query.username, req.query.comparator, t1, t2, chunks, function(data){
+      res.send(data);
+    });
+
+  } else res.status(400).send("Bad request.")
+}
+
 module.exports = {
   eventTimestamp: function(req, res, next) {
     getEventTimestampQuery(req.query.evt).then(function(doc){
@@ -197,53 +269,13 @@ module.exports = {
 
   // TODO: clean this up plz :(
   rawdata: function(req, res, next) {
+    generalDataQuery(req, res, next, rawDataHandler);
+  },
 
-    if (process.env.LOGS) {
-      console.log("GETTING DATA REQUEST");
-    }
-
-    var chunks = +req.query.chunks;
-
-    if (!req.query.evt1 && !req.query.evt2 && !req.query.t1 && !req.query.t2) {
-      req.query.t2 = Date.now();
-      req.query.t1 = req.query.offset ? (req.query.t2 - (+req.query.offset)) : (req.query.t2 - 8000);
-    }
-
-    if (req.query.evt1 && req.query.evt2) {
-
-      Promise.all([getEventTimestampQuery(req.query.evt1), getEventTimestampQuery(req.query.evt2)])
-      .then(function (resolvedValues){
-
-        if (resolvedValues[0] && resolvedValues[1] && resolvedValues[0][0] && resolvedValues[1][0]) {
-
-          if (!simpleCache[resolvedValues[0][0].eventName]){
-            simpleCache[resolvedValues[0][0].eventName] = resolvedValues[0][0];
-          }
-
-          if (!simpleCache[resolvedValues[1][0].eventName]){
-            simpleCache[resolvedValues[1][0].eventName] = resolvedValues[1][0];
-          }
-
-          var t1 = resolvedValues[0][0].timestamp;
-          var t2 = resolvedValues[1][0].timestamp;
- 
-          rawDataHandler(req.query.username, req.query.comparator, t1, t2, chunks, function(data){
-            res.send(data);
-          });
-
-        } else res.send("Can't find a provided event");
-      })
-
-    } else if (req.query.t1 && req.query.t2) {
-      var t2 = +req.query.t2;
-      var t1 = +req.query.t1;
-
-      rawDataHandler(req.query.username, req.query.comparator, t1, t2, chunks, function(data){
-        res.send(data);
-      });
-
-    } else res.status(400).send("Bad request.")
-
+  csvdata: function(req, res, next) {
+    var filename = 'data.csv';
+    res.attachment(filename);
+    generalDataQuery(req, res, next, csvDataHandler);
   }
 
 }
