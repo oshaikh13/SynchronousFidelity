@@ -96,7 +96,7 @@ module.exports = {
   actionFields: function() {
     return [
       'timestamp',
-      'displayname',
+      'displayName',
       'head.pitch',
       'head.yaw', 
       'head.roll',
