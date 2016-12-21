@@ -22,6 +22,7 @@
     var params = simpleQueryString.parse(location.hash);   
     var username = params.username || "cornellvel";
     var comparator = params.comparator || "Omar";
+    var maxDist = parseInt(params.maxdist) || 15;
 
     console.log(username, comparator);
 
@@ -33,7 +34,7 @@
 
     var distYAxes = {
       min: 0,
-      max: 9
+      max: maxDist
     }
 
     var correlationYAxes = {

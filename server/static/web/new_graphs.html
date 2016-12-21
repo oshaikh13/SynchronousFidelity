@@ -20,7 +20,9 @@
 
     var params = simpleQueryString.parse(location.hash);   
     var username = params.username || "cornellvel";
-    var comparator = params.comparator || "Omar"; 
+    var comparator = params.comparator || "Omar";
+    var maxDist = parseInt(params.maxdist) || 15;
+
 
     console.log(username, comparator);
 
@@ -112,7 +114,7 @@
         },
         yAxis: {
           min: 0,
-          max: 9,
+          max: maxDist,
           minPadding: 0.1,
           maxPadding: 0.1,
           title: {
@@ -141,7 +143,7 @@
         },
         yAxis: {
           min: 0,
-          max: 9,
+          max: maxDist,
           minPadding: 0.1,
           maxPadding: 0.1,
           title: {
