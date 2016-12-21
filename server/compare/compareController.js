@@ -4,10 +4,7 @@ var compareUtils = require('./compareUtils.js')
 
 var json2csv = require('json2csv');
 
-// If I were to over-engineer this, I'd add Redis here :p
-var simpleCache = {
-
-}
+var simpleCache = {};
 
 
 function getEventTimestampQuery(evtName) {
@@ -267,7 +264,6 @@ module.exports = {
   },
 
 
-  // TODO: clean this up plz :(
   rawdata: function(req, res, next) {
     generalDataQuery(req, res, next, rawDataHandler);
   },

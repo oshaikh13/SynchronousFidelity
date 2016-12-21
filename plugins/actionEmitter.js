@@ -1,5 +1,5 @@
 
-var baseURL = "http://132.236.225.12:8000/"
+var baseURL = "http://localhost:8000/"
 
 var frame = 0;
 
@@ -7,6 +7,7 @@ var DEBUG = false;
 
 var SPAM_FRAME_COUNT = 50;
 
+var FRAME_SEND_COUNT = 3;
 
 // Avoid spamming the console with a ton of messages. Not fun.
 function avoidSpam(cb) {
