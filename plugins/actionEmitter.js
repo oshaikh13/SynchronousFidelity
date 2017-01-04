@@ -143,7 +143,7 @@ function getPositions () {
     }
 
     avoidSpam(function () {
-      console.log(req);
+      print(req);
     });
 
     sendToServer(req);
