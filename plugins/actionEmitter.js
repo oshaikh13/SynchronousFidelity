@@ -60,7 +60,7 @@ function getPositions () {
   var incrementFrame = function() { frame++; };
 
   // Only send requests on every 3rd frame
-  if (frame % 3 === 0) {
+  if (frame % FRAME_SEND_COUNT === 0) {
 
     // Request Structure
     var req = {
@@ -113,7 +113,7 @@ function getPositions () {
     var hands = req.hands;
 
 
-    if (!DEBUG && (!hands.leftHand.pose.valid || !hands.rightHand.pose.valid || !HMD.active)) {
+    if (!DEBUG && false /* && (!hands.leftHand.pose.valid || !hands.rightHand.pose.valid || !HMD.active)*/) {
       // Checks if the hands are NOT being controlled by the vive controller
       // This is also run if the vive isn't in use, and you're using a display
       avoidSpam(function(){
@@ -142,6 +142,9 @@ function getPositions () {
       palm.rotation = undefined;
     }
 
+    avoidSpam(function () {
+      console.log(req);
+    });
 
     sendToServer(req);
   }
