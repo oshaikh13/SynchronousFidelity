@@ -1,11 +1,12 @@
 var Action = require('../actions/actionModel.js');
+var ActionCache = require('../actions/actionCache.js');
+
 var Event = require('../events/eventModel.js');
 var compareUtils = require('./compareUtils.js')
 
 var json2csv = require('json2csv');
 
 var simpleCache = {};
-
 
 function getEventTimestampQuery(evtName) {
 
@@ -148,6 +149,8 @@ function sumFrameDistances (personA, personB) {
 
 }
 
+// TODO: See the similarities between raw and cache? Abstract away...
+
 function rawDataHandler (username, comparator, t1, t2, chunks, cb) {
 
   if (t1 > t2) {
@@ -182,6 +185,39 @@ function rawDataHandler (username, comparator, t1, t2, chunks, cb) {
   });
 }
 
+function cacheDataHandler (username, comparator, t1, t2, chunks, cb) {
+  if (t1 > t2) {
+    cb("timestamp/event 2 should come later than timestamp/event 1");
+    return;
+  }
+
+  var resolvedValues = ActionCache.get(username, comparator, t1, t2);
+
+  var chunkUsers = compareUtils.chunkify(resolvedValues[0], chunks);
+  var chunkComparators = compareUtils.chunkify(resolvedValues[1], chunks);
+
+  var results = {
+    data: []
+  };
+
+  for (var i = 0; i < chunks; i++) {
+
+    var rCorrelationData = sumFrameDistances(chunkUsers[i], chunkComparators[i]);
+    rCorrelationData.chunkNum = i + 1;
+    results.data.push(rCorrelationData);
+
+
+  }
+
+  results.totalTime = t2 - t1;
+  results.chunkTime = results.totalTime/chunks;
+  results.completionTime = Date.now();
+  
+  cb(results);
+
+
+}
+
 function csvDataHandler(username, comparator, t1, t2, chunks, cb) {
 
   if (t1 > t2) {
@@ -205,6 +241,7 @@ function csvDataHandler(username, comparator, t1, t2, chunks, cb) {
   });
 
 }
+
 
 function generalDataQuery(req, res, next, handler) {
   if (process.env.LOGS) {
@@ -246,6 +283,9 @@ function generalDataQuery(req, res, next, handler) {
   } else if (req.query.t1 && req.query.t2) {
     var t2 = +req.query.t2;
     var t1 = +req.query.t1;
+
+
+    if (req.query.cache) handler = cacheDataHandler;
 
     handler(req.query.username, req.query.comparator, t1, t2, chunks, function(data){
       res.send(data);
