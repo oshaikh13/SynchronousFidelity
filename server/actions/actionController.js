@@ -15,6 +15,8 @@ module.exports = {
 
     var newAction = req.body;
     newAction.timestamp = Date.now();
+    
+    ActionCache.add(newAction);
 
     // prettyPrint(newAction);
     Action.create(newAction, function(err, doc){
@@ -25,7 +27,6 @@ module.exports = {
 
     });
 
-    ActionCache.add(newAction);
 
   },
 

@@ -252,7 +252,7 @@ function generalDataQuery(req, res, next, handler) {
 
   if (!req.query.evt1 && !req.query.evt2 && !req.query.t1 && !req.query.t2) {
     req.query.t2 = Date.now();
-    req.query.t1 = req.query.offset ? (req.query.t2 - (+req.query.offset)) : (req.query.t2 - 8000);
+    req.query.t1 = req.query.offset ? (req.query.t2 - (+req.query.offset)) : (req.query.t2 - 3000);
   }
 
   if (req.query.evt1 && req.query.evt2) {
