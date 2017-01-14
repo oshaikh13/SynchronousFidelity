@@ -2,7 +2,7 @@ module.exports = {
 
   cache: {},
 
-  limit: 1000, // Store 3000 frames in memory
+  limit: 2000, // Store 2000 frames in memory
 
   add: function (data) {
 
