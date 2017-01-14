@@ -2,19 +2,21 @@ module.exports = {
 
   cache: {},
 
-  limit: 2000, // Store 3000 frames in memory
+  limit: 1000, // Store 3000 frames in memory
 
   add: function (data) {
 
     var name = data.displayName;
 
-    if (!cache[name]) cache[name] = [];
+    if (!this.cache[name]) this.cache[name] = [];
 
-    cache[name].push(data);
+    this.cache[name].push(data);
 
-    var numRemove = cache[name].length - limit;
+    var numRemove = this.cache[name].length - this.limit;
 
-    if (numRemove > 0) x = x.splice(numRemove);
+    console.log(numRemove);
+
+    if (numRemove > 0) this.cache[name] = this.cache[name].splice(numRemove);
     
   },
 
@@ -31,7 +33,7 @@ module.exports = {
 
     var inLimitUser = this.cache[username].filter(inTimestamps);
     var inLimitComparator = this.cache[comparator].filter(inTimestamps);
-    // console.log(inLimitUser, inLimitComparator);
+    
     return [inLimitUser, inLimitComparator];
 
   }
