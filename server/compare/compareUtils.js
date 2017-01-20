@@ -1,5 +1,89 @@
+// Utilities that requests synchrony requests depend upon.
+
 module.exports = {
 
+  // Tinker with this method to find different means of syncrhony
+  sycnhronyCalculator: function (personA, personB) {
+    var _this = this;
+
+    // TODO: Add this obj to the frame so we can align it. Not really needed since frames are
+    // usually always aligned.
+    function interval (start, end) {
+      var obj = {};
+      obj.start = start;
+      obj.end = end;
+    }
+
+    function getDistanceSum (frame1, frame2) {
+
+
+      var frame1LeftHand = frame1.hands.leftHand.position;
+      var frame2LeftHand = frame2.hands.leftHand.position;
+
+      var distLeftHand = _this
+                          .threeDimensionalDistance(frame1LeftHand, frame2LeftHand);
+
+      var frame1RightHand = frame1.hands.rightHand.position;
+      var frame2RightHand = frame2.hands.rightHand.position;
+
+      var distRightHand = _this
+                          .threeDimensionalDistance(frame1RightHand, frame2RightHand);
+
+      var frame1Head = frame1.head.position;
+      var frame2Head = frame2.head.position;
+
+      var distHead = _this
+                          .threeDimensionalDistance(frame1Head, frame2Head);
+
+      return distHead + distLeftHand + distRightHand; // You don't have to "sum" them.
+
+    }
+
+
+    function dualFrameMap (person, cb) {
+      var newArr = [];
+
+      if (person === undefined || person.length === 0 || person.length === 1) return newArr;
+
+      for (var i = 0; i < person.length - 1; i++) {
+        var frame1 = person[i];
+        var frame2 = person[i + 1];
+        newArr.push(cb(frame1, frame2));
+      }
+
+      return newArr;
+    }
+
+    var distancePersonA = 0;
+    var personADistances = dualFrameMap(personA, function(frame1, frame2) {
+      var distMoved = getDistanceSum(frame1, frame2);
+      distancePersonA += distMoved;
+      return distMoved;
+    });
+
+
+
+    var distancePersonB = 0;
+    var personBDistances = dualFrameMap(personB, function(frame1, frame2) {
+      var distMoved = getDistanceSum(frame1, frame2);
+      distancePersonB += distMoved;
+      return distMoved;
+    });
+
+    return {
+      R: _this.getPearsonCorrelation(personADistances, personBDistances),
+      distancePersonA: distancePersonA,
+      distancePersonB: distancePersonB
+    };
+
+  },
+
+
+  deepExists: function (resolvedValues) {
+    return resolvedValues[0] && resolvedValues[1] && resolvedValues[0][0] && resolvedValues[1][0];
+  },
+
+  // Splits an array into a chunks of size n.
   chunkify: function(a, n, balanced) {
 
     if (n < 2)
@@ -37,13 +121,47 @@ module.exports = {
   },
 
 
+
+  // Takes two objs with x, y, z props and find the distance
   threeDimensionalDistance: function (o1, o2) {
     return Math.sqrt((o2.x-o1.x)*(o2.x-o1.x)+(o2.y-o1.y)*(o2.y-o1.y)+(o2.z-o1.z)*(o2.z-o1.z));
   },
 
+  rProccessor: function(resolvedValue, chunks, t2, t1) {
+
+    var chunkUsers = this.chunkify(resolvedValue[0], chunks);
+    var chunkComparators = this.chunkify(resolvedValue[1], chunks);
+
+    var results = {
+      data: []
+    };
+
+    for (var i = 0; i < chunks; i++) {
+
+      var rCorrelationData = this.sycnhronyCalculator(chunkUsers[i], chunkComparators[i]);
+      rCorrelationData.chunkNum = i + 1;
+      results.data.push(rCorrelationData);
+
+
+    }
+
+    results.totalTime = t2 - t1;
+    results.chunkTime = results.totalTime/chunks;
+    results.completionTime = Date.now();
+
+    return results;
+  },
+
+
   /*
   * Shamefully ripped off R correlator from Steve Gardner 
   * Thank you!
+  *
+  * Considers each element from an array as a point
+  *
+  * (x, y) coordinate = (x[0], y[0])
+  * A line is drawn through these coordinates, and the R value is returned.
+  *
   */
 
   getPearsonCorrelation: function (x, y) {
@@ -91,7 +209,12 @@ module.exports = {
     var answer = step1 / step4;
   
     return answer;
+    
   },
+
+  // These are fields used for the JSON csv parsing library.
+  // Lets the parser know what fields should be added to the CSV files
+  // so it can find it in the object returned from mongodb.
 
   actionFields: function() {
     return [
