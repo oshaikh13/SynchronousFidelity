@@ -35,7 +35,9 @@ module.exports = {
       var distHead = _this
                           .threeDimensionalDistance(frame1Head, frame2Head);
 
-      return distHead + distLeftHand + distRightHand; // You don't have to "sum" them.
+      // Right now, what we do for synchrony, is use the sum of the distance moved as means of
+      // determining the R correlation
+      return distHead + distLeftHand + distRightHand; 
 
     }
 
@@ -54,7 +56,15 @@ module.exports = {
       return newArr;
     }
 
+    // DistancePersonA and DistancePersonB just store how much the user has moved in the total time
     var distancePersonA = 0;
+
+    // The personAdistances contains an array that logs how far the user has moved PER frame
+    // e.x [3.2, 4.3, 4.5, 3.4, 4.9] where the first element is the distance moved between frame 0 and 1
+    // and the next element is the distance moved between 1 and 2
+
+    // The same rules apply for personB
+
     var personADistances = dualFrameMap(personA, function(frame1, frame2) {
       var distMoved = getDistanceSum(frame1, frame2);
       distancePersonA += distMoved;
@@ -71,6 +81,9 @@ module.exports = {
     });
 
     return {
+      // Now, both personA and personB are an array of numbers
+      // We treat personA as the x values for a point, and person B for the y values
+      // If they are somewhat equal, on an the graph, we should have a greater R value!
       R: _this.getPearsonCorrelation(personADistances, personBDistances),
       distancePersonA: distancePersonA,
       distancePersonB: distancePersonB

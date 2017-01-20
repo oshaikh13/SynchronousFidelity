@@ -12,7 +12,11 @@ var DEFAULT_OFFSET = 3000; // the number of seconds for the offset window to com
 // Takes a data handler from each HTTP request, and deals with it appropriately. 
 function generalDataQuery(req, res, next, handler) {
 
-  // Converts the chunks URL parameter into an integer. The + notation denotes string to int conversion
+  // Converts the chunks URL parameter into an integer. The + notation denotes string to int conversion.
+  // This helps when trying to find R correlations in a LONG interaction.
+  // If the space between t1 and t2 is large, what's the point in finding the entire sychrony score
+  // We can split the interaction into 'chunks' and find R for each equally spaced chunk.
+  // By default, the number of chunks on the live tracker is 1, since t2 - t1 is small.
   var chunks = +req.query.chunks;
 
   // If we're missing events or timestamps, simply take the current time as t2,
