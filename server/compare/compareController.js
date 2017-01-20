@@ -6,6 +6,8 @@ var compareUtils = require('./compareUtils.js');
 var compareHandlers = require('./compareHandlers.js');
 var compareQueries = require('./compareQueries.js');
 
+var DEFAULT_OFFSET = 3000; // the number of seconds for the offset window to compare sycnhrony 
+                           // this is what you want to change if the offset should be larger/smaller
 
 // Takes a data handler from each HTTP request, and deals with it appropriately. 
 function generalDataQuery(req, res, next, handler) {
@@ -17,7 +19,7 @@ function generalDataQuery(req, res, next, handler) {
   // and take an offset (3 secs default) back as t2
   if (!req.query.evt1 && !req.query.evt2 && !req.query.t1 && !req.query.t2) {
     req.query.t2 = Date.now();
-    req.query.t1 = req.query.offset ? (req.query.t2 - (+req.query.offset)) : (req.query.t2 - 3000);
+    req.query.t1 = req.query.offset ? (req.query.t2 - (+req.query.offset)) : (req.query.t2 - DEFAULT_OFFSET);
   }
 
   // If we have events, we need to convert them to timestamps...
@@ -27,12 +29,12 @@ function generalDataQuery(req, res, next, handler) {
     compareQueries.getMultipleQueries(req.query.evt1, req.query.evt2)
     .then(function (resolvedValues){
 
-      // Makes sure the events exist, or the response from the database is valid
+      // Makes sure the events exist, or the response from the database is invalid
       if (compareUtils.deepExists(resolvedValues)) {
 
-        // The multipleQuery function stores events in a cache, so we don't need to hit the database
+        // The getmultipleQueries looks for events in a cache, so we don't need to hit the database
 
-        // This stores the event with a timestamp, in the cache, so we don't need to go back and 
+        // This stores the event with a timestamp, in that cache, so we don't need to go back and 
         // fetch the timestamps paird with events. 
         if (!compareQueries.simpleCache[resolvedValues[0][0].eventName]){
           compareQueries.simpleCache[resolvedValues[0][0].eventName] = resolvedValues[0][0];
@@ -45,8 +47,8 @@ function generalDataQuery(req, res, next, handler) {
         var t1 = resolvedValues[0][0].timestamp;
         var t2 = resolvedValues[1][0].timestamp;
 
-        // This cache parameter is not for event caching, but for actual action movement caching.
 
+        // This cache parameter is not for event caching, but for actual action movement caching.
         // This is particularly useful when handling live R correlation data, as multiple requests
         // to a database can be "slow"
         if (req.query.cache) handler = cacheDataHandler;

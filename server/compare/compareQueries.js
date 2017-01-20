@@ -73,7 +73,7 @@ module.exports = {
 
   // Spreads argument parameters into an array and performs eventTimestampQueries on all of them.
   getMultipleQueries: function(...args) {
-    var _this = this
+    var _this = this;
     var promises = [];
     args.forEach(function(elem) {
       promises.push(_this.getEventTimestampQuery(elem));

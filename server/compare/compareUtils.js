@@ -6,8 +6,8 @@ module.exports = {
   sycnhronyCalculator: function (personA, personB) {
     var _this = this;
 
-    // TODO: Add this obj to the frame so we can align it. Not really needed since frames are
-    // usually always aligned.
+    // TODO: Add this obj to the frame so we can align it. 
+    // Not really needed since frames are usually aligned closely.
     function interval (start, end) {
       var obj = {};
       obj.start = start;
@@ -83,7 +83,7 @@ module.exports = {
     return resolvedValues[0] && resolvedValues[1] && resolvedValues[0][0] && resolvedValues[1][0];
   },
 
-  // Splits an array into a chunks of size n.
+  // Splits an array into 'a' chunks of size 'n'.
   chunkify: function(a, n, balanced) {
 
     if (n < 2)
@@ -122,7 +122,7 @@ module.exports = {
 
 
 
-  // Takes two objs with x, y, z props and find the distance
+  // Takes two points with x, y, z props and find the distance
   threeDimensionalDistance: function (o1, o2) {
     return Math.sqrt((o2.x-o1.x)*(o2.x-o1.x)+(o2.y-o1.y)*(o2.y-o1.y)+(o2.z-o1.z)*(o2.z-o1.z));
   },
