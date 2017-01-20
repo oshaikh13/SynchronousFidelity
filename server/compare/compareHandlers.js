@@ -5,6 +5,8 @@ var json2csv = require('json2csv');
 var compareQueries = require('./compareQueries.js');
 var compareUtils = require('./compareUtils.js');
 var ActionCache = require('../actions/actionCache.js');
+var Action = require('../actions/actionModel.js');
+
 
 module.exports = {
 

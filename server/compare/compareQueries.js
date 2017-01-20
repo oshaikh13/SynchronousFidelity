@@ -1,3 +1,5 @@
+var Event = require('../events/eventModel.js');
+var Action = require('../actions/actionModel.js');
 
 
 module.exports = {
@@ -71,9 +73,10 @@ module.exports = {
 
   // Spreads argument parameters into an array and performs eventTimestampQueries on all of them.
   getMultipleQueries: function(...args) {
+    var _this = this
     var promises = [];
     args.forEach(function(elem) {
-      promises.push(this.getEventTimestampQuery(elem));
+      promises.push(_this.getEventTimestampQuery(elem));
     })
 
     return Promise.all(promises);
