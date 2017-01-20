@@ -6,8 +6,8 @@ module.exports = {
   // A helper that gets a timestamp given an eventName
   getEventTimestampQuery: function(evtName) {
 
-    if (simpleCache[evtName]) {
-      return Promise.resolve(simpleCache[evtName]);
+    if (this.simpleCache[evtName]) {
+      return Promise.resolve(this.simpleCache[evtName]);
     } else if (evtName) {
 
       var qry = {

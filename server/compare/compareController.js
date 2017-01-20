@@ -34,12 +34,12 @@ function generalDataQuery(req, res, next, handler) {
 
         // This stores the event with a timestamp, in the cache, so we don't need to go back and 
         // fetch the timestamps paird with events. 
-        if (!simpleCache[resolvedValues[0][0].eventName]){
-          simpleCache[resolvedValues[0][0].eventName] = resolvedValues[0][0];
+        if (!compareQueries.simpleCache[resolvedValues[0][0].eventName]){
+          compareQueries.simpleCache[resolvedValues[0][0].eventName] = resolvedValues[0][0];
         }
 
-        if (!simpleCache[resolvedValues[1][0].eventName]){
-          simpleCache[resolvedValues[1][0].eventName] = resolvedValues[1][0];
+        if (!compareQueries.simpleCache[resolvedValues[1][0].eventName]){
+          compareQueries.simpleCache[resolvedValues[1][0].eventName] = resolvedValues[1][0];
         }
 
         var t1 = resolvedValues[0][0].timestamp;
@@ -77,7 +77,7 @@ function generalDataQuery(req, res, next, handler) {
 
 module.exports = {
   eventTimestamp: function(req, res, next) {
-    getEventTimestampQuery(req.query.evt).then(function(doc){
+    compareQueries.getEventTimestampQuery(req.query.evt).then(function(doc){
       res.status(200).send(doc);
     }).catch(function(err){
       res.status(400).send(err);
