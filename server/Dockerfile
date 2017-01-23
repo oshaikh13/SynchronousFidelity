@@ -1,4 +1,4 @@
-FROM nodesource/jessie:7.0.0
+FROM node:7.0.0
 ADD package.json package.json  
 RUN npm install  
 ADD . .  
