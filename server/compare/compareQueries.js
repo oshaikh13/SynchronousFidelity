@@ -53,17 +53,19 @@ module.exports = {
   // Queries all for two users frames between the timestamp and an offset.
   queryAllFrames: function (user, comparator, timestamp, offset, isOffsetTimestamp) {
 
+    let queryTimestamp = this.getTimestampQuery(timestamp, offset, isOffsetTimestamp);
+    
     var comparatorFrames = Action.find(
       {
         displayName: comparator,
-        timestamp: this.getTimestampQuery(timestamp, offset, isOffsetTimestamp)
+        timestamp: queryTimestamp
       }
     ).lean().exec();
 
     var userFrames = Action.find(
       {
         displayName: user,
-        timestamp: this.getTimestampQuery(timestamp, offset, isOffsetTimestamp)
+        timestamp: queryTimestamp
       }
     ).lean().exec();
 

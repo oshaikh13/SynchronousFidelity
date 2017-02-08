@@ -46,8 +46,10 @@ module.exports = {
       return;
     }
       
+    let queryTimestamp = compareQueries.getTimestampQuery(t1, t2, true);
+
     Action.find({
-      timestamp: compareQueries.getTimestampQuery(t1, t2, true)
+      timestamp: queryTimestamp
     }).lean().exec(function (err, actions) {
 
       if (err) {
