@@ -13,5 +13,12 @@ module.exports = {
 
     })
 
+  },
+
+  getEvents: function(req, res, next) {
+    Event.find({}, function(err, doc) {
+      if (err) res.status(400).send(err);
+      else res.send(doc);
+    })
   }
 }
