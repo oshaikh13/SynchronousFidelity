@@ -1,0 +1,67 @@
+
+<html>
+  <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/css/bootstrap.min.css" integrity="sha384-2hfp1SzUoho7/TsGGGDaFdsuuDL0LX2hnUp6VkX3CUQ2K4K+xjboZdsXyp4oUHZj" crossorigin="anonymous">
+  </head>
+  <body>
+
+    <form style="padding-left: 20px" class="form-inline">
+
+      <button id="emitbtn" type="button" style="margin: 20px" class="btn btn-primary" onclick="getEvents()">Fetch Events</button>
+
+    </form>
+
+    <table id="eventTable" style="margin: 20px" class="table">
+      <thead>
+        <tr>
+          <th>Event Name</th>
+          <th>Event Emitter</th>
+          <th>Timestamp</th>
+        </tr>
+      </thead>
+      <tbody>
+
+      </tbody>
+    </table>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <script>
+
+      function getEvents(e) {
+
+        axios.get('/api/event/').then(function(response){
+
+          // document.getElementById("cols").innerHTML = "";
+          var paras = document.getElementsByClassName('eventRow');
+
+          while (paras[0]) paras[0].parentNode.removeChild(paras[0]);
+
+          var table = document.getElementById("eventTable");
+
+          response.data.forEach(function (event) {
+            // debugger;
+            var row = table.insertRow(1);
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(0);
+            var cell3 = row.insertCell(0);
+
+            row.className = "eventRow"
+
+            cell3.innerHTML = event.eventName;
+            cell2.innerHTML = event.displayName;
+            cell1.innerHTML = event.timestamp;
+
+
+          })
+
+
+        });
+
+      }
+
+    </script>
+
+  </body>
+</html>
+

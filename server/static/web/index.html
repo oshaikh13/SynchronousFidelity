@@ -6,7 +6,10 @@
   </head>
 
   <body>
-    <form style="padding: 20px" class="form-inline">
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <form style="padding: 20px" id="graphForm" class="form-inline">
       <div class="form-group">
         <label for="name1">User</label>
         <input type="text" class="form-control" id="name1">
@@ -18,16 +21,33 @@
       <button type="submit" class="btn btn-primary">Load Graph</button>
     </form>
 
+    <form style="padding: 20px" id="eventForm" class="form-inline">
+      <div class="form-group">
+        <label for="evt1">Event 1</label>
+        <input type="text" class="form-control" id="evt1">
+      </div>
+      <div class="form-group">
+        <label for="evt2">Event 2</label>
+        <input type="text" class="form-control" id="evt2">
+      </div>
+      <button type="submit" class="btn btn-primary">Download</button>
+    </form>
+
     <div>
       <a style="margin-left: 20px" class="btn btn-primary" href="eventEmitter.html">Go to Event Emitter</a>
     </div>
+
+    <div>
+      <a style="margin-top: 10px; margin-left: 20px" class="btn btn-primary" href="events.html">View all events!</a>
+    </div>
+
   </body>
 
   <script type="text/javascript">
 
-    var element = document.querySelector("form");
+    var graphForm = document.getElementById("graphForm");
 
-    element.addEventListener("submit", function(event) {
+    graphForm.addEventListener("submit", function(event) {
 
       event.preventDefault();
 
@@ -43,5 +63,29 @@
       
     });
     
+
+    var eventForm = document.getElementById("eventForm");
+
+    eventForm.addEventListener("submit", function(event) {
+
+      event.preventDefault();
+
+      var evt1 = document.getElementById('evt1').value;
+      var evt2 = document.getElementById('evt2').value;
+
+      if (!evt1 || !evt2) {
+        alert("Pleae enter both events...");
+        return;
+      }
+
+      window.location.href = "api/compare/csvdata?evt1=" + encodeURIComponent(evt1) + 
+        "&evt2=" + encodeURIComponent(evt2);
+
+      
+    });
+
+
   </script>
 </html>
+
+
