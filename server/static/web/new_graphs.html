@@ -57,7 +57,9 @@
             shiftB = seriesB.data.length > 30; // shift if the series is longer than 20
 
         chart.series[0].addPoint([completionTime, R], true, shift);
+        // Chart A is for the user
         chartA.series[0].addPoint([completionTime, distancePersonA], true, shift);
+        // Chart B is for the comparator
         chartB.series[0].addPoint([completionTime, distancePersonB], true, shift);
 
         setTimeout(fetchDataInterval, 600)
@@ -106,7 +108,7 @@
           defaultSeriesType: 'spline'
         },
         title: {
-          text: 'Live Distance User Data'
+          text: 'Live Distance Data for ' + username
         },
         xAxis: {
           type: 'datetime',
@@ -135,7 +137,7 @@
           defaultSeriesType: 'spline'
         },
         title: {
-          text: 'Live Distance Comparator Data'
+          text: 'Live Distance Data for ' + comparator 
         },
         xAxis: {
           type: 'datetime',
