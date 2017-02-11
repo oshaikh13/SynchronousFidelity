@@ -33,6 +33,18 @@
       <button type="submit" class="btn btn-primary">Download</button>
     </form>
 
+    <form style="padding: 20px" id="timestampForm" class="form-inline">
+      <div class="form-group">
+        <label for="t1">Timestamp 1</label>
+        <input type="text" class="form-control" id="t1">
+      </div>
+      <div class="form-group">
+        <label for="t2">Timestamp 2</label>
+        <input type="text" class="form-control" id="t2">
+      </div>
+      <button type="submit" class="btn btn-primary">Download</button>
+    </form>
+
     <div>
       <a style="margin-left: 20px" class="btn btn-primary" href="eventEmitter.html">Go to Event Emitter</a>
     </div>
@@ -84,6 +96,25 @@
       
     });
 
+    var timestampForm = document.getElementById("timestampForm");
+
+    timestampForm.addEventListener("submit", function(event) {
+
+      event.preventDefault();
+
+      var t1 = document.getElementById('t1').value;
+      var t2 = document.getElementById('t2').value;
+
+      if (!t1 || !t2) {
+        alert("Pleae enter both events...");
+        return;
+      }
+
+      window.location.href = "api/compare/csvdata?t1=" + encodeURIComponent(t1) + 
+        "&t2=" + encodeURIComponent(t2);
+
+      
+    });
 
   </script>
 </html>
