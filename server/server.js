@@ -11,10 +11,22 @@ var app = express(),
 var server = require('http').Server(app);
 
 app.use(cors());
-mongoose.connect(process.env.MONGODB_URI); // connect to mongo database
+
+// connect to mongo database
+mongoose.connect(process.env.MONGODB_URI, 
+  { 
+    server: { 
+      socketOptions: { 
+        connectTimeoutMS: +process.env.MONGODB_MAX_TIMEOUT 
+      }
+    }
+  }
+); 
 
 console.log("Listening on PORT: " + process.env.PORT);
 console.log("Using MONGODB_URI: " + process.env.MONGODB_URI);
+console.log("Using MONGODB_MAX_TIMEOUT: " + process.env.MONGODB_MAX_TIMEOUT);
+
 
 // configure our server with all the middleware and and routing
 
