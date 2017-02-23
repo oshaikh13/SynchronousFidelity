@@ -2,16 +2,31 @@
 <html>
   <head>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/css/bootstrap.min.css" integrity="sha384-2hfp1SzUoho7/TsGGGDaFdsuuDL0LX2hnUp6VkX3CUQ2K4K+xjboZdsXyp4oUHZj" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.standalone.min.css" crossorigin="anonymous">
   </head>
   <body>
 
     <form style="padding-left: 20px" class="form-inline">
+      <br />
+      <h4>Requesting Event Names</h4>
+      <br />
 
+      <div class="form-group" data-provide="datepicker">
+        <label for="Date">Date</label>
+        <input type="text" class="form-control" id="date">
+      </div>
+      <br />
+      <br />
+      <div class="form-group">
+        <label for="eventName">Event Name contains</label>
+        <input type="text" class="form-control" id="eventName">
+      </div>
+      <br />
       <button id="emitbtn" type="button" style="margin: 20px" class="btn btn-primary" onclick="getEvents()">Fetch Events</button>
 
     </form>
 
-    <table id="eventTable" style="margin: 20px" class="table">
+    <table id="eventTable" style="width: 90%; margin: 2%" class="table">
       <thead>
         <tr>
           <th>Event Name</th>
@@ -25,12 +40,44 @@
     </table>
 
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
 
     <script>
 
+
+      function isValidDate(dateObj) {
+        return dateObj.getDate() == d &&
+          dateObj.getMonth() == m &&
+          dateObj.getFullYear() == y;
+      }
+
+      function parseDate(date) {
+        // Stolen from this stackoverflow link
+        // http://stackoverflow.com/questions/276479/javascript-how-to-validate-dates-in-format-mm-dd-yyyy
+        var matches = /^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})$/.exec(date);
+        if (matches == null) return false;
+        var d = matches[2];
+        var m = matches[1] - 1;
+        var y = matches[3];
+
+        return new Date(y, m, d);
+      }
+
       function getEvents(e) {
 
-        axios.get('/api/event/').then(function(response){
+        var dateName = document.getElementById('date').value;
+        var timeObj = parseDate(dateName) || {getTime: function() {return undefined}}; // stub
+        var MS_IN_ONE_DAY = 86400000;
+
+        axios.get('/api/event/', {
+          params: {
+            t1: timeObj.getTime(),
+            t2: timeObj.getTime() + MS_IN_ONE_DAY,
+            searchTerms: document.getElementById('eventName').value,
+            chunks: 1
+          }
+        }).then(function(response){
 
           // document.getElementById("cols").innerHTML = "";
           var paras = document.getElementsByClassName('eventRow');
