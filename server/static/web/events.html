@@ -10,18 +10,19 @@
       <br />
       <h4>Requesting Event Names</h4>
       <br />
-      <h6>Use the form to find event names.</h6>
+      <h6>Use the form to find event names. If you choose to omit both the input fields, we'll show you all 
+      previously emitted events!</h6>
       <br />
 
       <div class="form-group" data-provide="datepicker">
         <label for="Date">Date</label>
-        <input type="text" class="form-control" id="date">
+        <input type="text" class="form-control" id="date" placeholder="optional">
       </div>
       <br />
       <br />
       <div class="form-group">
         <label for="eventName">Event Name contains</label>
-        <input type="text" class="form-control" id="eventName">
+        <input type="text" class="form-control" id="eventName" placeholder="optional">
       </div>
       <br />
       <button id="emitbtn" type="button" style="margin: 20px" class="btn btn-primary" onclick="getEvents()">Fetch Events</button>
@@ -53,7 +54,7 @@
         var m = this.m;
         var d = this.d;
         var y = this.y;
-        
+
         return dateObj.getDate() == d &&
           dateObj.getMonth() == m &&
           dateObj.getFullYear() == y;
