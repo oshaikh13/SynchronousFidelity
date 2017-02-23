@@ -10,6 +10,8 @@
       <br />
       <h4>Requesting Event Names</h4>
       <br />
+      <h6>Use the form to find event names.</h6>
+      <br />
 
       <div class="form-group" data-provide="datepicker">
         <label for="Date">Date</label>
@@ -46,7 +48,12 @@
     <script>
 
 
-      function isValidDate(dateObj) {
+      function isValidDate() {
+        var dateObj = this.date;
+        var m = this.m;
+        var d = this.d;
+        var y = this.y;
+        
         return dateObj.getDate() == d &&
           dateObj.getMonth() == m &&
           dateObj.getFullYear() == y;
@@ -61,14 +68,24 @@
         var m = matches[1] - 1;
         var y = matches[3];
 
-        return new Date(y, m, d);
+        return {
+          date: new Date(y, m, d),
+          y: y,
+          m: m,
+          d: d
+        }
       }
 
       function getEvents(e) {
 
         var dateName = document.getElementById('date').value;
-        var timeObj = parseDate(dateName) || {getTime: function() {return undefined}}; // stub
+        var parseDateData = parseDate(dateName); 
+        var timeObj = parseDateData.date;
         var MS_IN_ONE_DAY = 86400000;
+
+        // Handle invalid dates
+        if (!timeObj || !isValidDate.call(parseDateData)) timeObj = {getTime: function() {return undefined}}; // stub
+        if (!timeObj.getTime()) alert("Your date is invalid! We're going to ignore it!");
 
         axios.get('/api/event/', {
           params: {
