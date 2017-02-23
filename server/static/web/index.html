@@ -10,6 +10,9 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
     <form style="padding: 20px" id="graphForm" class="form-inline">
+      <h4>Movement Tracker in VR</h4>
+      <br />
+      <p style="width: 60%;">Load graphs that show live distance moved over a time period, and R correlation for two users</p>
       <div class="form-group">
         <label for="name1">User</label>
         <input type="text" class="form-control" id="name1">
@@ -21,7 +24,25 @@
       <button type="submit" class="btn btn-primary">Load Graph</button>
     </form>
 
-    <form style="padding: 20px" id="eventForm" class="form-inline">
+    <div style="margin-left: 20px;">
+      <p style="width: 60%;">The event emitter allows you to save a particlar timestamp to the server as a reference point.
+      This is particlarly useful when you need to download data later.</p>
+      <a class="btn btn-primary" href="eventEmitter.html">Go to Event Emitter</a>
+    </div>
+
+    <form style="padding-top: 40px; padding-left: 20px;" id="eventForm" class="form-inline">
+      <h4>Download Movement Data</h4>
+      <br />
+
+      <div>
+        <p style="width: 60%;">Look at all the past events you've emitted through the event emitter by 
+        clicking on Get Past Events. You can also enter timestamps or events in the forms to request movement 
+        data between them.</p>
+        <a class="btn btn-primary" href="events.html">Get Past Events</a>
+      </div>
+      <br />
+      <p style="width: 60%;">Clicking download will save a CSV file to a downloads folder handled by 
+      your browser.</p>
       <div class="form-group">
         <label for="evt1">Event 1</label>
         <input type="text" class="form-control" id="evt1">
@@ -32,6 +53,7 @@
       </div>
       <button type="submit" class="btn btn-primary">Download</button>
     </form>
+
 
     <form style="padding: 20px" id="timestampForm" class="form-inline">
       <div class="form-group">
@@ -45,13 +67,9 @@
       <button type="submit" class="btn btn-primary">Download</button>
     </form>
 
-    <div>
-      <a style="margin-left: 20px" class="btn btn-primary" href="eventEmitter.html">Go to Event Emitter</a>
-    </div>
-
-    <div>
-      <a style="margin-top: 10px; margin-left: 20px" class="btn btn-primary" href="events.html">View all events!</a>
-    </div>
+    <br />
+    <br />
+    <br />
 
   </body>
 
