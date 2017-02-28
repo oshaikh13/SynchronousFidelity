@@ -97,9 +97,9 @@ function getPositions () {
       head: {
         // 'World Space in game' coordinates
         position: MyAvatar.getHeadPosition(),
-        pitch: MyAvatar.headRoll,
+        pitch: MyAvatar.headPitch,
         yaw: MyAvatar.headYaw,
-        roll: MyAvatar.headPitch
+        roll: MyAvatar.headRoll
       },
 
       body: {
