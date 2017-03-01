@@ -1,3 +1,0 @@
-Copy the following into a powershell console to open ports up so computers can connect on a local network.
-
-if (!(Get-NetFirewallRule | where {$_.Name -eq "synchrony 8000"})) { New-NetFirewallRule -Name “synchrony 8000" -DisplayName "synchrony 8000" -Protocol tcp -LocalPort 8000 -Action Allow -Enabled True}
