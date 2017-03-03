@@ -55,3 +55,4 @@ Controller.enableMapping(MAPPING_NAME);
 Script.scriptEnding.connect(function () {
   Controller.disableMapping(MAPPING_NAME);
 });
+
