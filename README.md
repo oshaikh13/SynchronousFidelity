@@ -97,11 +97,11 @@ Click on settings > avatar > and fill out the display name with anything. Ensure
 
 Next, add the plugin files into the interface. 
 
-The plugins are hosted on dropbox. Here are the URLs
+The plugins are served directly from SynchronousFidelity
 
-actionEmitter.js: https://cdn.rawgit.com/oshaikh13/SynchronousFidelity/master/plugins/actionEmitter.js
+actionEmitter.js: http://<SERVER_IP>:<SERVER_PORT>/plugins/actionEmitter/<SERVER_IP>
 
-eventEmitter.js: https://cdn.rawgit.com/oshaikh13/SynchronousFidelity/master/plugins/eventEmitter.js
+eventEmitter.js: http://<SERVER_IP>:<SERVER_PORT>/plugins/eventEmitter/<SERVER_IP>
 
 Right click > edit > running scripts > from URL > and paste the above link in.
 
