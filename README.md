@@ -99,9 +99,9 @@ Next, add the plugin files into the interface.
 
 The plugins are served directly from SynchronousFidelity
 
-actionEmitter.js: http://<SERVER_IP>:<SERVER_PORT>/plugins/actionEmitter/<SERVER_IP>
+actionEmitter.js: ```http://<SERVER_IP>:<SERVER_PORT>/plugins/actionEmitter/<SERVER_IP>```
 
-eventEmitter.js: http://<SERVER_IP>:<SERVER_PORT>/plugins/eventEmitter/<SERVER_IP>
+eventEmitter.js: ```http://<SERVER_IP>:<SERVER_PORT>/plugins/eventEmitter/<SERVER_IP>```
 
 Right click > edit > running scripts > from URL > and paste the above link in.
 
@@ -109,6 +109,6 @@ Proceed to Developer > Logs, and ensure that the script is logging 'Successfully
 
 ## Roadmap
 
-- [] Fix failure to receive 1 out of 5 frames. Could be Heroku throttling or too many HTTP Requests for HiFi to handle
+- [ ] Fix failure to receive 1 out of 5 frames. Could be Heroku throttling or too many HTTP Requests for HiFi to handle
 - [X] Add a web client to visualize similarities in movements. Preferably live, while the actionEmitter is running.
-- [] Extend the API so we can query for Pearson's R correlation between 2+ people (is this even possible?)
+- [ ] Extend the API so we can query for Pearson's R correlation between 2+ people (is this even possible?)
