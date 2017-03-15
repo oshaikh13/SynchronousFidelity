@@ -10,8 +10,6 @@ var cubePosition = Vec3.sum(MyAvatar.position,Vec3.sum(
                     Vec3.multiply(Quat.getFront(MyAvatar.orientation), DISTANCE_IN_FRONT_OF_ME)));
 
 var cubeObj;
-var lightObj;
-
 
 function hslToRgb(hslObj) {
   var h = hslObj.hue;
@@ -100,19 +98,9 @@ function generateCube() {
     type: 'Cube',
     id: 'synchronyCube',
     position: cubePosition,
-    color: { red: , green: , blue: } 
+    color: { red: 255, green: 255, blue: 255} 
   };
   cubeObj = Entities.addEntity(properties);
-}
-
-function generateLight() {
-  var properties = {
-    type: 'Light',
-    id: 'synchronyLight',
-    position: cubePosition,
-
-  };
-  lightObj = Entities.addEntity(properties);
 }
 
 // Generate the entities
@@ -145,10 +133,6 @@ function updateCube(rValue) {
 
   Entities.editEntity(cubeObj, {  color: hslToRgb(HSL) });
 
-}
-
-function updateLight(rValue) {
-  Entities.editEntity(lightObj, { intensity: Math.abs(rValue) });
 }
 
 var updateFuncs = [updateCube];
