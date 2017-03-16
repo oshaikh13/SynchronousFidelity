@@ -21,6 +21,8 @@ module.exports = function (app, express) {
   app.use('/api/event', eventRouter);
   app.use('/api/compare', compareRouter);
 
+
+  // TODO: cleanup static file servers
   app.get('/plugins/actionEmitter/:serverip', function(req, res, next) {
 
     var address = 'http://' + req.params.serverip + ':' + process.env.PORT + '/';
@@ -36,6 +38,16 @@ module.exports = function (app, express) {
     var address = 'http://' + req.params.serverip + ':' + process.env.PORT + '/';
 
     var jsFile = plugins.getEventEmitterText(address);
+    res.set('Content-Type', 'application/javascript;charset=utf-8');
+    res.send(jsFile);
+
+  });
+
+  app.get('/plugins/synchronyColorCube/:serverip', function(req, res, next) {
+
+    var address = 'http://' + req.params.serverip + ':' + process.env.PORT + '/';
+
+    var jsFile = plugins.getSynchronyColorCubeText(address);
     res.set('Content-Type', 'application/javascript;charset=utf-8');
     res.send(jsFile);
 
