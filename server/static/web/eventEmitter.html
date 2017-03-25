@@ -15,7 +15,8 @@
         <input type="text" class="form-control" id="name1" placeholder="optional">
       </div>
 
-      <button id="emitbtn" style="margin: 20px" class="btn btn-primary" onclick="emitEvent()">Emit Event</button>
+      <button id="emitbtn" style="margin: 20px" class="btn btn-primary" onclick="emitEvent(event)">Emit Event</button>
+
 
     </form>
 
@@ -36,12 +37,14 @@
 
     <script>
       var evtNum = 0;
-      function emitEvent() {
+      function emitEvent(e) {
+
+        e.preventDefault();
 
         document.getElementById("emitbtn").disabled = true;
         document.getElementById("emitbtn").textContent = "Emitting";
 
-        var evtName = document.getElementById('name1').value;;
+        var evtName = document.getElementById('name1').value;
 
         if (!evtName) {
           evtNum++;
@@ -54,6 +57,7 @@
         }).then(function(response){
 
           console.log(response);
+
           document.getElementById("emitbtn").disabled = false;
           document.getElementById("emitbtn").textContent = "Emit Event";
           var table = document.getElementById("eventTable");
@@ -66,6 +70,9 @@
           cell3.innerHTML = response.data.eventName;
           cell2.innerHTML = response.data.displayName;
           cell1.innerHTML = response.data.timestamp;
+
+          document.getElementById("name1").value = "";
+
 
         });
 
