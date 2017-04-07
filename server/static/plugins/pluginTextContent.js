@@ -1,8 +1,8 @@
 
 var fs = require('fs')
 
-var actionEmitterText = fs.readFileSync(__dirname + '/actionEmitter.js', 'utf8');
-var eventEmitterText = fs.readFileSync(__dirname + '/eventEmitter.js', 'utf8');
+var MovementTrackerText = fs.readFileSync(__dirname + '/MovementTracker.js', 'utf8');
+var EventTrackerText = fs.readFileSync(__dirname + '/EventTracker.js', 'utf8');
 var synchronyColorCubeText = fs.readFileSync(__dirname + '/synchronyColorCube.js', 'utf8');
 
 
@@ -13,12 +13,12 @@ function baseURLAttacher (serverIpAddress, script) {
 }
 
 module.exports = {
-  getActionEmitterText: function (serverIpAddress) {
-    return baseURLAttacher(serverIpAddress, actionEmitterText);
+  getMovementTrackerText: function (serverIpAddress) {
+    return baseURLAttacher(serverIpAddress, MovementTrackerText);
   },
 
-  getEventEmitterText: function (serverIpAddress) {
-    return baseURLAttacher(serverIpAddress, eventEmitterText);
+  getEventTrackerText: function (serverIpAddress) {
+    return baseURLAttacher(serverIpAddress, EventTrackerText);
   },
 
   getSynchronyColorCubeText: function (serverIpAddress) {

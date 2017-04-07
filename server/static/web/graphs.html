@@ -102,7 +102,7 @@
           });
         }
 
-        function arrayLimter (arr, value, index, numElements, limit) {
+        function arrayLimiter (arr, value, index, numElements, limit) {
           if (value !== null && value !== undefined) {
             if (arr.length > limit) {
               arr.splice(index, numElements);
@@ -114,15 +114,15 @@
 
         }
 
-        if (arrayLimter(rCorrelation, response.data.data[0].R, 1, 1, 30)) {
+        if (arrayLimiter(rCorrelation, response.data.data[0].R, 1, 1, 30)) {
           updateGraph(rCorrelationGraph, rCorrelation);
         }
 
-        if (arrayLimter(userDist, response.data.data[0].distancePersonA, 1, 1, 30)) {
+        if (arrayLimiter(userDist, response.data.data[0].distancePersonA, 1, 1, 30)) {
           updateGraph(userDistGraph, userDist);
         }
 
-        if (arrayLimter(comparatorDist, response.data.data[0].distancePersonB, 1, 1, 30)) {
+        if (arrayLimiter(comparatorDist, response.data.data[0].distancePersonB, 1, 1, 30)) {
           updateGraph(comparatorDistGraph, comparatorDist);
         }
 

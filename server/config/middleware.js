@@ -23,21 +23,21 @@ module.exports = function (app, express) {
 
 
   // TODO: cleanup static file servers
-  app.get('/plugins/actionEmitter/:serverip', function(req, res, next) {
+  app.get('/plugins/MovementTracker/:serverip', function(req, res, next) {
 
     var address = 'http://' + req.params.serverip + ':' + process.env.PORT + '/';
 
-    var jsFile = plugins.getActionEmitterText(address);
+    var jsFile = plugins.getMovementTrackerText(address);
     res.set('Content-Type', 'application/javascript;charset=utf-8');
     res.send(jsFile);
 
   });
 
-  app.get('/plugins/eventEmitter/:serverip', function(req, res, next) {
+  app.get('/plugins/EventTracker/:serverip', function(req, res, next) {
 
     var address = 'http://' + req.params.serverip + ':' + process.env.PORT + '/';
 
-    var jsFile = plugins.getEventEmitterText(address);
+    var jsFile = plugins.getEventTrackerText(address);
     res.set('Content-Type', 'application/javascript;charset=utf-8');
     res.send(jsFile);
 
