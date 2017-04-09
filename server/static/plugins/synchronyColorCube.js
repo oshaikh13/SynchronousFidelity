@@ -1,13 +1,7 @@
 
 var frame = 0;
 
-var DISTANCE_IN_FRONT_OF_ME = 1.5;
-var DISTANCE_ABOVE_ME = 1;
-
-
-var cubePosition = Vec3.sum(MyAvatar.position,Vec3.sum(
-                    Vec3.multiply(Quat.getFront(MyAvatar.orientation), DISTANCE_ABOVE_ME), 
-                    Vec3.multiply(Quat.getFront(MyAvatar.orientation), DISTANCE_IN_FRONT_OF_ME)));
+var cubePosition = Vec3.sum(MyAvatar.position, Vec3.multiply(3, Quat.getFront(Camera.getOrientation())));
 
 var cubeObj;
 
@@ -67,7 +61,7 @@ function paramString(paramObj) {
   for (var key in paramObj) {
     paramStr += key + "=" + paramObj[key] + "&";
   }
-  return str.slice(0, -1);
+  return paramStr.slice(0, -1);
 }
 
 function sendToServer (cb) {
@@ -77,7 +71,11 @@ function sendToServer (cb) {
   // you need to make a new instance for every HTTP request
 
   xmlhttp.onreadystatechange = function () {
-    cb(JSON.parse(xmlhttp));
+
+    if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+      cb(JSON.parse(xmlhttp.responseText));
+    }
+
   };
 
   var params = {
@@ -95,10 +93,11 @@ function sendToServer (cb) {
 
 function generateCube() {
   var properties = {
-    type: 'Cube',
-    id: 'synchronyCube',
+    type: 'Box',
+    name: 'synchronyBox',
     position: cubePosition,
-    color: { red: 255, green: 255, blue: 255} 
+    color: { red: 255, green: 255, blue: 255},
+    dimensions: { x: .6, y: .6, z: .6},
   };
   cubeObj = Entities.addEntity(properties);
 }
@@ -106,23 +105,44 @@ function generateCube() {
 // Generate the entities
 generateCube();
 
+// Uncomment to debug gradient
+// var acrossGradient = 0;
+// var shift = .005;
+
 function updateCube(rValue) {  
 
   var HSL;
 
-  if (r < 0) {
+  if (!rValue) rValue = 0;
+
+  // Uncomment to debug gradient shift.
+  // if (acrossGradient + shift > 1) shift = -Math.abs(shift);
+  // if (acrossGradient + shift < -1) shift = Math.abs(shift);
+
+  // print(acrossGradient + shift);
+  // acrossGradient += shift;
+  // rValue = acrossGradient + shift;
+
+  if (rValue < 0) {
+
+    var newLightness = 130 - lightnessConverter(0, 100, 30, 100, rValue * -100);
+
     HSL = {
       hue: 239,
       saturation: 100,
-      lightness: r * -100
+      lightness: newLightness
     }
 
-  } else if (r > 0) {
+  } else if (rValue > 0) {
+
+    var newLightness = 130 - lightnessConverter(0, 100, 30, 100, rValue * 100)
+
     HSL = {
       hue: 360,
       saturation: 100,
-      lightness: r * -100
+      lightness: newLightness
     }
+
   } else {
     HSL = {
       hue: 360,
@@ -149,7 +169,7 @@ function updateObjects () {
 
 
 // register the call back so it fires before each data send
-Script.update.connect(updateCube);
+Script.update.connect(updateObjects);
 
 Script.scriptEnding.connect(function() {
   Entities.deleteEntity(cubeObj);

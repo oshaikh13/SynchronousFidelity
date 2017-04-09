@@ -43,11 +43,11 @@ module.exports = function (app, express) {
 
   });
 
-  app.get('/plugins/synchronyColorCube/:serverip', function(req, res, next) {
+  app.get('/plugins/SynchronyColorCube/:serverip/:username/:comparator', function(req, res, next) {
 
     var address = 'http://' + req.params.serverip + ':' + process.env.PORT + '/';
 
-    var jsFile = plugins.getSynchronyColorCubeText(address);
+    var jsFile = plugins.getSynchronyColorCubeText(address, req.params.username, req.params.comparator);
     res.set('Content-Type', 'application/javascript;charset=utf-8');
     res.send(jsFile);
 
