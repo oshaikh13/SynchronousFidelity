@@ -3,7 +3,7 @@
 module.exports = {
 
   // Tinker with this method to find different means of syncrhony
-  sycnhronyCalculator: function (personA, personB) {
+  synchronyCalculator: function (personA, personB) {
     var _this = this;
 
     // TODO: Add this obj to the frame so we can align it. 
@@ -151,7 +151,7 @@ module.exports = {
 
     for (var i = 0; i < chunks; i++) {
 
-      var rCorrelationData = this.sycnhronyCalculator(chunkUsers[i], chunkComparators[i]);
+      var rCorrelationData = this.synchronyCalculator(chunkUsers[i], chunkComparators[i]);
       rCorrelationData.chunkNum = i + 1;
       results.data.push(rCorrelationData);
 
