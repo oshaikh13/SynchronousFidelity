@@ -1,0 +1,14 @@
+{
+  "name": "rcalc",
+  "version": "1.0.0",
+  "description": "r calc for movement data",
+  "main": "rcalc.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "csv-parser": "^1.11.0"
+  }
+}
