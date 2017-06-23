@@ -33,7 +33,11 @@ var walker  = walk.walk('./data', { followLinks: false });
 
 walker.on('file', function(root, stat, next) {
     // Add this file to the list of files
-    files.push(root + '/' + stat.name);
+
+    if (stat.name.split('.').slice(-1)[0] === 'csv') {
+      files.push(root + '/' + stat.name);
+    }
+
     next();
 });
 
@@ -48,7 +52,13 @@ var processData = function (data, fname) {
     console.log(fname);
     return;
   } 
-  // console.log(Object.keys(data[0]));
+
+  var sorter = function(a, b) {
+    return parseInt(a[tLookup]) - parseInt(b[tLookup]);
+  };
+
+  data = data.sort(sorter);
+  // console.log(data);
 
   var reqTime = 600;
   var lookAhead = 3000;
