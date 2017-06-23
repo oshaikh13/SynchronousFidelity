@@ -1,0 +1,263 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/css/bootstrap.min.css" integrity="sha384-2hfp1SzUoho7/TsGGGDaFdsuuDL0LX2hnUp6VkX3CUQ2K4K+xjboZdsXyp4oUHZj" crossorigin="anonymous">
+
+    <!-- 1. Add these JavaScript inclusions in the head of your page -->
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.1.js"></script>
+    <script type="text/javascript" src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.rawgit.com/khalidsalomao/simple-query-string/1.3.0/src/simplequerystring.min.js"></script>
+    
+    <!-- 2. Add the JavaScript to initialize the chart on document ready -->
+    <script>
+
+var points = {
+  "data": [
+    {
+      "R": 0.7187780126642694,
+      "distancePersonA": 2.073481723614223,
+      "distancePersonB": 0.8125943449297734,
+      "chunkNum": 1,
+      "completionTime": 1497971361095
+    },
+    {
+      "R": 0.6165774279575388,
+      "distancePersonA": 1.8080361330293884,
+      "distancePersonB": 0.7924939560959514,
+      "chunkNum": 1,
+      "completionTime": 1497971361695
+    },
+    {
+      "R": 0.6486289849055724,
+      "distancePersonA": 0.7521510248217302,
+      "distancePersonB": 1.5403722580218988,
+      "chunkNum": 1,
+      "completionTime": 1497971362295
+    },
+    {
+      "R": 0.49380348455216705,
+      "distancePersonA": 1.4312184347902568,
+      "distancePersonB": 0.7861141780396205,
+      "chunkNum": 1,
+      "completionTime": 1497971362895
+    },
+    {
+      "R": 0.6873602055123391,
+      "distancePersonA": 0.7635050815191273,
+      "distancePersonB": 1.5298343883218455,
+      "chunkNum": 1,
+      "completionTime": 1497971363495
+    },
+    {
+      "R": 0.5917876250645218,
+      "distancePersonA": 0.7476339303322194,
+      "distancePersonB": 1.5316142040402985,
+      "chunkNum": 1,
+      "completionTime": 1497971364095
+    },
+    {
+      "R": 0.7677814522705666,
+      "distancePersonA": 0.683548003789788,
+      "distancePersonB": 1.6645100599698872,
+      "chunkNum": 1,
+      "completionTime": 1497971364695
+    },
+    {
+      "R": 0.7455337760347184,
+      "distancePersonA": 0.7212675494972273,
+      "distancePersonB": 1.8861466739710435,
+      "chunkNum": 1,
+      "completionTime": 1497971365295
+    },
+    {
+      "R": 0.5286949279873198,
+      "distancePersonA": 1.740904025198999,
+      "distancePersonB": 0.7386226853991448,
+      "chunkNum": 1,
+      "completionTime": 1497971365895
+    },
+    {
+      "R": 0.5717037604579358,
+      "distancePersonA": 0.7105151936494688,
+      "distancePersonB": 1.8766693908107481,
+      "chunkNum": 1,
+      "completionTime": 1497971366495
+    },
+    {
+      "R": 0.23366783979335665,
+      "distancePersonA": 0.7111870783348512,
+      "distancePersonB": 2.0943264016837384,
+      "chunkNum": 1,
+      "completionTime": 1497971367095
+    }
+  ],
+  "avgR": 0.6003924997454823
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    var chart;
+    var chartA;
+    var chartB;
+
+    var params = simpleQueryString.parse(location.hash);   
+    var username = params.username || "CA1";
+    var comparator = params.comparator || "CA2";
+    var maxDist = parseInt(params.maxdist) || 15;
+
+
+    var loadPoints = function () {
+        if (!chart || !chartA || !chartB) {
+            setTimeout(loadPoints, 600)
+            return;
+        }
+        points.data.forEach(function(currentPoint){
+            var distancePersonA = currentPoint.distancePersonA;
+            var distancePersonB = currentPoint.distancePersonB;
+            var R = currentPoint.R;
+            var completionTime = currentPoint.completionTime;
+
+            var series = chart.series[0],
+                shift = series.data.length > 30; // shift if the series is longer than 20
+
+            var seriesA = chartA.series[0],
+                shiftA = seriesA.data.length > 30; // shift if the series is longer than 20
+
+            var seriesB = chartB.series[0],
+                shiftB = seriesB.data.length > 30; // shift if the series is longer than 20
+
+            chart.series[0].addPoint([completionTime, R], true, shift);
+            // Chart A is for the user
+            chartA.series[0].addPoint([completionTime, distancePersonA], true, shift);
+            // Chart B is for the comparator
+            chartB.series[0].addPoint([completionTime, distancePersonB], true, shift);
+        })
+
+    }
+
+
+
+      
+    $(document).ready(function() {
+
+      chart = new Highcharts.Chart({
+        chart: {
+          renderTo: 'container',
+          defaultSeriesType: 'spline',
+          events: {
+            load: loadPoints
+          }
+        },
+        title: {
+          text: 'Live R Correlation Data'
+        },
+        xAxis: {
+          type: 'datetime',
+          tickPixelInterval: 150,
+          maxZoom: 20 * 1000
+        },
+        yAxis: {
+          min: -1,
+          max: 1,
+          minPadding: 0.1,
+          maxPadding: 0.1,
+          title: {
+            text: 'Value',
+            margin: 80
+          }
+        },
+        series: [{
+          name: 'R Data',
+          data: []
+        }]
+      }); 
+
+      chartA = new Highcharts.Chart({
+        chart: {
+          renderTo: 'containerA',
+          defaultSeriesType: 'spline'
+        },
+        title: {
+          text: 'Live Distance Data for ' + username
+        },
+        xAxis: {
+          type: 'datetime',
+          tickPixelInterval: 150,
+          maxZoom: 20 * 1000
+        },
+        yAxis: {
+          min: 0,
+          max: maxDist,
+          minPadding: 0.1,
+          maxPadding: 0.1,
+          title: {
+            text: 'Value',
+            margin: 80
+          }
+        },
+        series: [{
+          name: 'Distance User Data',
+          data: []
+        }]
+      }); 
+
+      chartB = new Highcharts.Chart({
+        chart: {
+          renderTo: 'containerB',
+          defaultSeriesType: 'spline'
+        },
+        title: {
+          text: 'Live Distance Data for ' + comparator 
+        },
+        xAxis: {
+          type: 'datetime',
+          tickPixelInterval: 150,
+          maxZoom: 20 * 1000
+        },
+        yAxis: {
+          min: 0,
+          max: maxDist,
+          minPadding: 0.1,
+          maxPadding: 0.1,
+          title: {
+            text: 'Value',
+            margin: 80
+          }
+        },
+        series: [{
+          name: 'Distance Comparator Data',
+          data: []
+        }]
+      }); 
+
+    });
+
+    </script>
+    
+  </head>
+  <body>
+    <a id="emitbtn" style="margin-left: 20px; margin-top: 20px;" class="btn btn-primary" href="/">Back</a>
+
+    <!-- 3. Add the container -->
+    <div id="container" style="width: 800px; height: 400px; margin: 0 auto"></div>
+    <div id="containerA" style="width: 800px; height: 400px; margin: 0 auto"></div>
+    <div id="containerB" style="width: 800px; height: 400px; margin: 0 auto"></div>
+
+    
+  </body>
+</html>
