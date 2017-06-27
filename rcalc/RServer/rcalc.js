@@ -100,18 +100,26 @@ var processData = function (data, fname) {
     allRs.push(l);
   }
 
+
+  var x = [];
+  var y = [];
   var avg = 0;
   allRs.forEach(function(elem) {
     avg += elem.R;
+    x.push(elem.distancePersonA);
+    y.push(elem.distancePersonB);
     // console.log(elem.R);
   })
   avg /= allRs.length;
   var allData = {};
   allData.data = allRs;
-  allData.avgR = avg;
+  allData.averageR = avg;
+  allData.overallR = compareUtils.getPearsonCorrelation(x, y);
+
   // console.log();
-  console.log(fname + ": " + avg);
-  jsonfile.writeFile((fname.substring(0, fname.length - 3) + "json"), allData, {spaces: 2}, function (err) {
+  console.log(fname + ": " + allData.overallR + " " + allData.averageR);
+  jsonfile.writeFile((fname.substring(0, fname.length - 4) + ".json"), allData, {spaces: 2}, function (err) {
+    // console.log(err);
     console.log("DONE WRITING");
   });
 
