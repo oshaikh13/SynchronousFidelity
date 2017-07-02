@@ -85,6 +85,10 @@ $ npm start
 
 and the server should start!
 
+## Opening Ports
+
+If you have a Windows computer, you may need to open ports on your PC (even for computers on your LAN to connect). The powershell folder in this repo contains a script that can open those ports. 
+
 ## Plugin Description
 
 There are two plugins in the plugin folder. The action emitter is responsible for sending action data to the server on every third frame.
