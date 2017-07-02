@@ -18,6 +18,7 @@ var readCSVFile = function (fileName, callback) {
   fs.createReadStream(fileName)
     .pipe(csv())
     .on('data', function (data) {
+      // console.log(data);
       allData.push(data);
     })
     .on('end', function (data) {

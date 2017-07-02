@@ -99,9 +99,9 @@ Next, add the plugin files into the interface.
 
 The plugins are served directly from SynchronousFidelity
 
-MovementTracker.js: ```http://<SERVER_IP>:<SERVER_PORT>/plugins/MovementTracker/<SERVER_IP>```
+MovementTracker.js: ```http://<SERVER_IP>:<SERVER_PORT>/plugins/MovementTracker/<SERVER_IP>.js```
 
-EventTracker.js: ```http://<SERVER_IP>:<SERVER_PORT>/plugins/EventTracker/<SERVER_IP>```
+EventTracker.js: ```http://<SERVER_IP>:<SERVER_PORT>/plugins/EventTracker/<SERVER_IP>.js```
 
 Right click > edit > running scripts > from URL > and paste the above link in.
 
