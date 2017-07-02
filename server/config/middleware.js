@@ -21,37 +21,22 @@ module.exports = function (app, express) {
   app.use('/api/event', eventRouter);
   app.use('/api/compare', compareRouter);
 
+  var createStaticMiddleware = function (address, pluginFunction) {
+    app.get(address, function(req, res, next) {
 
-  // TODO: cleanup static file servers
-  app.get('/plugins/MovementTracker/:serverip', function(req, res, next) {
+      var URI = 'http://' + req.params.serverip + ':' + process.env.PORT + '/';
 
-    var address = 'http://' + req.params.serverip + ':' + process.env.PORT + '/';
+      var jsFile = pluginFunction(URI, req.params.username, req.params.comparator);
+      res.set('Content-Type', 'application/javascript;charset=utf-8');
+      res.send(jsFile);
 
-    var jsFile = plugins.getMovementTrackerText(address);
-    res.set('Content-Type', 'application/javascript;charset=utf-8');
-    res.send(jsFile);
+    });
+  }
 
-  });
+  createStaticMiddleware('/plugins/SynchronyColorCube/:serverip/:username/:comparator.js', plugins.getSynchronyColorCubeText);
+  createStaticMiddleware('/plugins/EventTracker/:serverip.js', plugins.getEventTrackerText);
+  createStaticMiddleware('/plugins/MovementTracker/:serverip.js', plugins.getMovementTrackerText);
 
-  app.get('/plugins/EventTracker/:serverip', function(req, res, next) {
-
-    var address = 'http://' + req.params.serverip + ':' + process.env.PORT + '/';
-
-    var jsFile = plugins.getEventTrackerText(address);
-    res.set('Content-Type', 'application/javascript;charset=utf-8');
-    res.send(jsFile);
-
-  });
-
-  app.get('/plugins/SynchronyColorCube/:serverip/:username/:comparator', function(req, res, next) {
-
-    var address = 'http://' + req.params.serverip + ':' + process.env.PORT + '/';
-
-    var jsFile = plugins.getSynchronyColorCubeText(address, req.params.username, req.params.comparator);
-    res.set('Content-Type', 'application/javascript;charset=utf-8');
-    res.send(jsFile);
-
-  });
 
   // inject our routers into their respective route files
   require('../actions/actionRoutes.js')(actionRouter);
