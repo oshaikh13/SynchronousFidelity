@@ -40,6 +40,8 @@ function generalDataQuery(req, res, next, handler) {
 
         // This stores the event with a timestamp, in that cache, so we don't need to go back and 
         // fetch the timestamps paird with events. 
+
+        // This 'simpleCache' is different from the actionCache. It stores events, not movement data!
         if (!compareQueries.simpleCache[resolvedValues[0][0].eventName]){
           compareQueries.simpleCache[resolvedValues[0][0].eventName] = resolvedValues[0][0];
         }
