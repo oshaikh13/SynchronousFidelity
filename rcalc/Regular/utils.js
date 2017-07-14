@@ -1,9 +1,8 @@
 // Utilities that requests synchrony requests depend upon.
 module.exports = {
 
-  SHIFTING_THRESHOLD: 300,
   // Tinker with this method to find different means of syncrhony
-  synchronyCalculator: function(personA, personB) {
+  sumFrameMap: function(personA, personB) {
     var _this = this;
 
     function getDistanceSum(frame1, frame2) {
@@ -68,6 +67,7 @@ module.exports = {
       if (person === undefined || person.length === 0 || person.length === 1) return newArr;
 
       for (var i = 0; i < person.length - 1; i++) {
+        console.log(i, i + 1);
         var frame1 = person[i];
         var frame2 = person[i + 1];
         newArr.push(cb(frame1, frame2));
@@ -124,10 +124,9 @@ module.exports = {
 
     for (var i = 0; i < chunks; i++) {
 
-      var rCorrelationData = this.synchronyCalculator(chunkUsers[i], chunkComparators[i]);
-      rCorrelationData.chunkNum = i + 1;
-      results.data.push(rCorrelationData);
-
+      var chunk = this.sumFrameMap(chunkUsers[i], chunkComparators[i]);
+      chunk.chunkNum = i + 1;
+      results.data.push(chunk);
 
     }
 
@@ -146,31 +145,16 @@ module.exports = {
   },
 
 
-  adjuster: function(data, callback) {
+  forEachFrame: function(data, callback) {
     var users = Object.keys(data);
     var startUser1 = 0;
     var startUser2 = 0;
 
     while (data[users[0]][startUser1] && data[users[1]][startUser2]) {
 
-
-      var user1Frame = data[users[0]][startUser1];
-      var user2Frame = data[users[1]][startUser2];
-        
-      var tLookup = Object.keys(data[users[0]][0])[0];
-      
-      var timeDiff = user2Frame[tLookup] - user1Frame[tLookup];
-
-      // Resets the starting point if the diff in frames is greater than the threshold, 300ms.
-      if (timeDiff > this.SHIFTING_THRESHOLD) {
-        startUser1++;
-      } else if (timeDiff < -this.SHIFTING_THRESHOLD) {
-        startUser2++;
-      } else {
-        callback(startUser1, startUser2);
-        startUser1++;
-        startUser2++;
-      }
+      callback(startUser1, startUser2);
+      startUser1++;
+      startUser2++;
 
     }
   },
@@ -257,28 +241,36 @@ module.exports = {
     // tLookup, if the formatting was right, should just be equal to 'timestamp'
     var tLookup = Object.keys(data[users[0]][0])[0];
 
-    // The adjuster is what 'skips' frames so that R can be as high as possible
-    // Think of the adjuster as a for loop that goes over the the frames
+    // The forEachFrame is what 'skips' frames so that R can be as high as possible
+    // Think of the forEachFrame as a for loop that goes over the the frames
     // Instead of giving one index value for an element in the dataset, it gives 2
 
     // Both indexes don't have to be the same. They just correspond to the elements that have
     // the closest timestamps betweem "CornellAvatar1" and "CornellAvatar2"
     
-    this.adjuster(data, function(id1, id2){
-      // id1 and id2 are indexes for the frames we should compare
 
+
+    this.forEachFrame(data, function(id1, id2){
+
+ 
+
+      // id1 and id2 are indexes for the frames we should compare
       // Saving the startTime makes it easy for us to chunk after timeChunk (2 secs)
       if (!startTime) startTime = data[users[0]][id1][tLookup];
 
       // Check if we've hit the 2 sec mark in the interaction, and make a chunk
-      if (data[users[0]][id1][tLookup] - startTime > timeChunk) {
+      // console.log(data[users[0]][id1][tLookup] - startTime);
+      if (data[users[0]][id1][tLookup] - startTime >= timeChunk) {
         // Point to a new chunkID when adding frames
         chunkId++;
         personA.push([]);
         personB.push([]);
-        startTime = data[users[0]][id1]['timestamp']; // reset the start time
+        // console.log((data[users[0]][id1][tLookup] - startTime) + " " + (data[users[1]][id1][tLookup] - startTime));
+        // console.log(id1, id2)
+        // console.log(parseInt(data[users[1]][id1][tLookup]) - parseInt(data[users[0]][id1][tLookup]) + " " + chunkId);
+        startTime = data[users[0]][id1][tLookup]; // reset the start time
       }
-
+   
       // Add frames to the chunks that chunkID is pointing to
       personA[chunkId].push(data[users[0]][id1]);
       personB[chunkId].push(data[users[1]][id2]);
