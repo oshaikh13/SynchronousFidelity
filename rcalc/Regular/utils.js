@@ -56,7 +56,11 @@ module.exports = {
 
       // Right now, what we do for synchrony, is use the sum of the distance moved as means of
       // determining the R correlation
-      return distHead + distLeftHand + distRightHand;
+
+      return distHead //+ distLeftHand + distRightHand;
+      // return distHead;
+      // return distLeftHand;
+      // return distRightHand;
 
     }
 
@@ -67,7 +71,7 @@ module.exports = {
       if (person === undefined || person.length === 0 || person.length === 1) return newArr;
 
       for (var i = 0; i < person.length - 1; i++) {
-        console.log(i, i + 1);
+        // console.log(i, i + 1);
         var frame1 = person[i];
         var frame2 = person[i + 1];
         newArr.push(cb(frame1, frame2));
@@ -101,10 +105,6 @@ module.exports = {
     });
 
     return {
-      // Now, both personA and personB are an array of numbers
-      // We treat personA as the x values for a point, and person B for the y values
-      // If they are somewhat equal, on an the graph, we should have a greater R value!
-      R: _this.getPearsonCorrelation(personADistances, personBDistances),
       distancePersonA: distancePersonA,
       distancePersonB: distancePersonB
     };
@@ -138,6 +138,10 @@ module.exports = {
       y.push(element.distancePersonB);
     });
 
+
+    // Now, both personA and personB are an array of numbers
+    // We treat personA as the x values for a point, and person B for the y values
+    // If they are somewhat equal, on an the graph, we should have a greater R value!
     results.overallR = this.getPearsonCorrelation(x, y);
 
     return results;
@@ -145,14 +149,61 @@ module.exports = {
   },
 
 
-  forEachFrame: function(data, callback) {
+  forEachFrame: function(data, timeChunk, callback) {
     var users = Object.keys(data);
     var startUser1 = 0;
     var startUser2 = 0;
 
+    var tLookup = Object.keys(data[users[0]][0])[0];
+
+
+    if (!data[users[0]] || !data[users[1]]) {
+      console.log(users);
+      return;
+    }
+
+    var timeChunk = 2000;
+    var currentTime = timeChunk;
+
+    var startTime = data[users[0]][startUser1][tLookup] < data[users[1]][startUser1][tLookup] ? 
+                      data[users[0]][startUser1][tLookup] : data[users[1]][startUser2][tLookup];
+    var chunkID = 0;
+
+
+    var pushUpIndex = function (userIdx, currentIdx) {
+      var oldIdx = currentIdx;
+      while (data[userIdx][currentIdx] && data[userIdx][currentIdx][tLookup] - startTime < timeChunk) {
+        currentIdx++;
+      }
+      return currentIdx;
+    }
+
+
     while (data[users[0]][startUser1] && data[users[1]][startUser2]) {
 
-      callback(startUser1, startUser2);
+      if (data[users[0]][startUser1][tLookup] - startTime >= currentTime || data[users[1]][startUser2][tLookup] - startTime >= currentTime) {
+ 
+        // console.log(chunkID + " " 
+        // + (parseInt(data[users[1]][startUser1][tLookup]) - parseInt(data[users[0]][startUser1][tLookup])) + " " 
+        // + (data[users[0]][startUser1][tLookup] - startTime) + " "
+        // + (data[users[1]][startUser1][tLookup] - startTime) + " " + startUser1 + " " + startUser2 + " " + currentTime);
+      }
+
+
+      if (data[users[0]][startUser1][tLookup] - startTime >= currentTime) {
+        startUser2 = pushUpIndex(users[1], startUser2);
+        currentTime += timeChunk;
+        chunkID++;
+      } else if (data[users[1]][startUser2][tLookup] - startTime >= currentTime) {
+        startUser1 = pushUpIndex(users[0], startUser1);
+        currentTime += timeChunk;
+        chunkID++;
+      }
+
+      // console.log(startUser1, startUser2, chunkID);
+      if (!(data[users[0]][startUser1] && data[users[1]][startUser2])) continue;
+
+      callback(startUser1, startUser2, chunkID);
       startUser1++;
       startUser2++;
 
@@ -226,12 +277,6 @@ module.exports = {
     // Returns an Array that looks like this:
     // users = ['CornellAvatar1', 'CornellAvatar2'];
     var users = Object.keys(data);
-    var startTime = null;
-
-    // This is just the chunk we're on right now.
-    // The maximum # of chunks we will have is equal to...
-    // totalInteractionTime (watever that is) / timeChunk (after how many secs we should have a chunk)
-    var chunkId = 0;
 
     // Arrays to store chunks for personA, personB (CornellAvatar1, CornellAvatar2)
     var personA = [[]];
@@ -247,40 +292,30 @@ module.exports = {
 
     // Both indexes don't have to be the same. They just correspond to the elements that have
     // the closest timestamps betweem "CornellAvatar1" and "CornellAvatar2"
-    
+    var completedChunks = 1;
+
+    this.forEachFrame(data, timeChunk, function(id1, id2, chunkId){
 
 
-    this.forEachFrame(data, function(id1, id2){
 
- 
+        // startTime = data[users[0]][id1][tLookup]; // reset the start time
 
-      // id1 and id2 are indexes for the frames we should compare
-      // Saving the startTime makes it easy for us to chunk after timeChunk (2 secs)
-      if (!startTime) startTime = data[users[0]][id1][tLookup];
-
-      // Check if we've hit the 2 sec mark in the interaction, and make a chunk
-      // console.log(data[users[0]][id1][tLookup] - startTime);
-      if (data[users[0]][id1][tLookup] - startTime >= timeChunk) {
-        // Point to a new chunkID when adding frames
-        chunkId++;
+      if (!personA[chunkId] || !personB[chunkId]){
         personA.push([]);
         personB.push([]);
-        // console.log((data[users[0]][id1][tLookup] - startTime) + " " + (data[users[1]][id1][tLookup] - startTime));
-        // console.log(id1, id2)
-        // console.log(parseInt(data[users[1]][id1][tLookup]) - parseInt(data[users[0]][id1][tLookup]) + " " + chunkId);
-        startTime = data[users[0]][id1][tLookup]; // reset the start time
       }
-   
       // Add frames to the chunks that chunkID is pointing to
       personA[chunkId].push(data[users[0]][id1]);
       personB[chunkId].push(data[users[1]][id2]);
+
+      completedChunks = chunkId;
 
     });
 
     return {
       chunkedUser1: personA,
       chunkedUser2: personB,
-      numChunks: chunkId + 1
+      numChunks: completedChunks + 1
     }
 
   }

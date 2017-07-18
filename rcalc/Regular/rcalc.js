@@ -27,7 +27,7 @@ walker.on('file', function(root, stat, next) {
     next();
 });
 
-var CHUNK_TIME = 2000;
+var CHUNK_TIME = 4000;
 
 // Just reads the CSV file
 var filterCSVFile = function (fileName, callback) {
@@ -46,8 +46,6 @@ var filterCSVFile = function (fileName, callback) {
 }
 
 
-
-
 walker.on('end', function() {
   files.forEach(function(elem) {
     filterCSVFile(elem, function(data, fname) {
@@ -63,7 +61,7 @@ walker.on('end', function() {
       var l = compareUtils.rProccessor(chunkedData.chunkedUser1, chunkedData.chunkedUser2, chunkedData.numChunks);
 
       jsonfile.writeFile((fname.substring(0, fname.length - 3) + "json"), l, {spaces: 2}, function (err) {
-        console.log("EVAL TIME: " + (Date.now() - START_EVAL_TIME) + "ms");
+        console.log("EVAL TIME: " + (Date.now() - START_EVAL_TIME) + "ms " + fname.substring(0, fname.length - 3) + " " + l.overallR + " " + (currentR/totes));
       });
 
     })
