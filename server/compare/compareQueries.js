@@ -13,9 +13,7 @@ module.exports = {
     } else if (evtName) {
 
       var qry = {
-        eventName: {
-          $eq: evtName
-        }
+        eventName: evtName
       }
 
       return Event

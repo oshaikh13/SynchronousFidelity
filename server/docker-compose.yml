@@ -12,4 +12,4 @@ synchronousfidelity:
     - PORT=8000
     - MONGODB_URI=mongodb://db:27017/synchrony
     - NODE_ENV=production
-    - MONGODB_MAX_TIMEOUT=20000
+    - MONGODB_MAX_TIMEOUT=60000
