@@ -2,6 +2,7 @@
 
 module.exports = {
 
+  lastRValues : [],
   // Tinker with this method to find different means of syncrhony
   synchronyCalculator: function (personA, personB) {
     var _this = this;
@@ -80,11 +81,24 @@ module.exports = {
       return distMoved;
     });
 
+
+    // Take the averages of the last 3 R results, and send that back.
+    // Should smooth out some of that variance in the synchrony graph
+    _this.lastRValues.push(
+      _this.getPearsonCorrelation(personADistances, personBDistances)
+    );
+
+    if (_this.lastRValues.length > 3) {
+      _this.lastRValues.shift();
+    }
+
+    var averageR = _this.lastRValues.reduce( ( p, c ) => p + c, 0 ) / _this.lastRValues.length;
+
     return {
       // Now, both personA and personB are an array of numbers
       // We treat personA as the x values for a point, and person B for the y values
       // If they are somewhat equal, on an the graph, we should have a greater R value!
-      R: _this.getPearsonCorrelation(personADistances, personBDistances),
+      R: averageR,
       distancePersonA: distancePersonA,
       distancePersonB: distancePersonB
     };
