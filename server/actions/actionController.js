@@ -16,9 +16,6 @@ module.exports = {
       if (err) {
         res.status(400).send(err);
       } else {
-        if (process.env.NODE_ENV === "development") {
-          console.log("Saved action to database!");
-        }
         res.sendStatus(200);
       } 
 
