@@ -245,7 +245,7 @@ module.exports = {
   // so it can find it in the object returned from mongodb.
 
   actionFields: function() {
-    return [
+    var hifiData = [
       'timestamp',
       'displayName',
       'head.pitch',
@@ -282,6 +282,29 @@ module.exports = {
       'palms.rightPalm.position.y',
       'palms.rightPalm.position.z'
     ];
+
+    var unityData = [
+      'head.position.x',
+      'head.position.y',
+      'head.position.z',
+      'head.rotation.pitch',
+      'head.rotation.yaw',
+      'head.rotation.roll',
+      'leftHand.position.x',
+      'leftHand.position.y',
+      'leftHand.position.z',
+      'leftHand.rotation.pitch',
+      'leftHand.rotation.yaw',
+      'leftHand.rotation.roll',
+      'rightHand.position.x',
+      'rightHand.position.y',
+      'rightHand.position.z',
+      'rightHand.rotation.pitch',
+      'rightHand.rotation.yaw',
+      'rightHand.rotation.roll',
+    ];
+
+    return unityData;
   },
 
   eventFields: function () {
