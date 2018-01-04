@@ -284,24 +284,26 @@ module.exports = {
     ];
 
     var unityData = [
+      'timestamp',
+      'displayName',
       'head.position.x',
       'head.position.y',
       'head.position.z',
       'head.rotation.pitch',
       'head.rotation.yaw',
       'head.rotation.roll',
-      'leftHand.position.x',
-      'leftHand.position.y',
-      'leftHand.position.z',
-      'leftHand.rotation.pitch',
-      'leftHand.rotation.yaw',
-      'leftHand.rotation.roll',
-      'rightHand.position.x',
-      'rightHand.position.y',
-      'rightHand.position.z',
-      'rightHand.rotation.pitch',
-      'rightHand.rotation.yaw',
-      'rightHand.rotation.roll',
+      'hands.leftHand.position.x',
+      'hands.leftHand.position.y',
+      'hands.leftHand.position.z',
+      'hands.leftHand.rotation.pitch',
+      'hands.leftHand.rotation.yaw',
+      'hands.leftHand.rotation.roll',
+      'hands.rightHand.position.x',
+      'hands.rightHand.position.y',
+      'hands.rightHand.position.z',
+      'hands.rightHand.rotation.pitch',
+      'hands.rightHand.rotation.yaw',
+      'hands.rightHand.rotation.roll',
     ];
 
     return unityData;
